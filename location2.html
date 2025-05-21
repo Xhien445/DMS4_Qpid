@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qpid - Location</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      width: 59.615px;
+      height: 50.917px;
+    }
+
+    .qid {
+      color: #F0F;
+      font-family: 'Lobster', cursive;
+      font-size: 48px;
+      font-weight: 400;
+      margin-left: 10px;
+    }
+
+    .top-bar {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 23px;
+      margin-bottom: 40px;
+    }
+
+    .redo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 23px;
+      height: 23px;
+      cursor: pointer;
+    }
+
+    .progress {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 11px;
+    }
+
+    .step {
+      width: 63px;
+      height: 8px;
+      border-radius: 12px;
+      opacity: 0;
+    }
+
+  
+
+    .location-image {
+      width: 201px;
+      height: 201px;
+      flex-shrink: 0;
+      margin-bottom: 30px;
+    }
+
+    .location-text {
+      color: #000;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 40px;
+      padding: 0 20px;
+    }
+
+    .location-btn {
+      width: 240px;
+      height: 50px;
+      flex-shrink: 0;
+      border-radius: 59px;
+      background: #F0F;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .location-btn span {
+      color: #000;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <img class="logo" src="sign in images/logo.png" alt="Logo">
+    <div class="qid">Qpid</div>
+  </div>
+
+  
+
+  <!-- Content -->
+  <img src="sign in images/location.png" alt="Location" class="location-image" />
+  <div class="location-text">
+    We need your location to show who’s nearby
+  </div>
+  <div class="location-btn" id="getLocationBtn">
+    <span>Enable Location</span>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.firebasestorage.app",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+   
+    document.getElementById('getLocationBtn').addEventListener('click', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+
+            firebase.auth().onAuthStateChanged((user) => {
+              if (user) {
+                db.collection("users").doc(user.uid).set({
+                  location: new firebase.firestore.GeoPoint(latitude, longitude)
+                }, { merge: true })
+                .then(() => {
+                  window.location.href = "combined.html";
+                })
+                .catch((error) => {
+                  alert("Failed to save location.");
+                  console.error("Error writing document: ", error);
+                });
+              } else {
+                alert("User not logged in.");
+              }
+            });
+          },
+          (error) => {
+            alert("Location access denied or unavailable.");
+            console.error(error);
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    });
+  </script>
+</body>
+</html>

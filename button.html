@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Interface</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #111;
+      font-family: sans-serif;
+      color: white;
+      display: flex;
+      height: 100vh;
+    }
+    .toggle-button {
+      display: flex;
+      align-items: center;
+      background-color: transparent;
+      border: 3px solid #ff00ff;
+      border-radius: 30px;
+      padding: 3px;
+      gap: 6px;
+      position: fixed;
+      top: 10px;
+      left: 62%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      width: 120px;
+    }
+    .icon-circle {
+      background-color: #ff00ff;
+      border-radius: 20px;
+      width: 50px;
+      height: 40px;
+      position: absolute;
+      transition: left 0.3s ease;
+      left: 3px;
+    }
+    .icon-logo, .icon-map {
+      width: 50px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      cursor: pointer;
+    }
+    .icon-map {
+      margin-left: auto;
+      height: 40px;
+    }
+    .icon-map img, .icon-logo img {
+      width: 60%;
+      height: 60%;
+      object-fit: contain;
+    }
+    .moved {
+      left: calc(100% - 55px);
+    }
+    .page {
+      display: none;
+      height: 100vh;
+      width: 100%;
+      border: none;
+    }
+    .active {
+      display: block;
+    }
+    .left-part {
+      width: 360px;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .right-part {
+      flex-grow: 1;
+      height: 100vh;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="toggle-button">
+    <div class="icon-circle" id="iconCircle"></div>
+    <div class="icon-logo" id="iconLogo" onclick="showMain()">
+      <img src="image/logo black.png" alt="logo">
+    </div>
+    <div class="icon-map" id="iconMap" onclick="showMap()">
+      <img src="image/map pink.png" alt="map">
+    </div>
+  </div>
+  
+  <iframe class="left-part" src="left part/left part.html"></iframe>
+  
+  <div class="right-part">
+    <iframe class="page active" id="mainPage" src="main.html"></iframe>
+    <iframe class="page" id="mapPage" src="map.html"></iframe>
+    <iframe class="page" id="payPlanPage" src="" style="display:none;"></iframe>
+    <iframe class="page" id="chatPage" src="" style="display:none;"></iframe>
+  </div>
+  
+  <script>
+    function showMain() {
+      document.getElementById('iconCircle').classList.remove('moved');
+      document.querySelector('#iconLogo img').src = 'image/logo black.png';
+      document.querySelector('#iconMap img').src = 'image/map pink.png';
+      document.getElementById('mainPage').classList.add('active');
+      document.getElementById('mapPage').classList.remove('active');
+      document.getElementById('payPlanPage').style.display = 'none';
+      document.getElementById('chatPage').style.display = 'none';
+    }
+
+    function showMap() {
+      document.getElementById('iconCircle').classList.add('moved');
+      document.querySelector('#iconLogo img').src = 'image/logo pink.png';
+      document.querySelector('#iconMap img').src = 'image/map black.png';
+      document.getElementById('mainPage').classList.remove('active');
+      document.getElementById('mapPage').classList.add('active');
+      document.getElementById('payPlanPage').style.display = 'none';
+      document.getElementById('chatPage').style.display = 'none';
+    }
+
+    function showPayPlan() {
+      document.getElementById('mainPage').classList.remove('active');
+      document.getElementById('mapPage').classList.remove('active');
+      document.getElementById('chatPage').style.display = 'none';
+      document.getElementById('payPlanPage').src = 'payplan.html';
+      document.getElementById('payPlanPage').style.display = 'block';
+    }
+
+    function showChat() {
+      document.getElementById('mainPage').classList.remove('active');
+      document.getElementById('mapPage').classList.remove('active');
+      document.getElementById('payPlanPage').style.display = 'none';
+      document.getElementById('chatPage').src = 'chat.html';
+      document.getElementById('chatPage').style.display = 'block';
+    }
+
+    // Ensure these functions are called from buttons in "left part.html"
+    window.onCompleteProfileClick = function() {
+      showPayPlan();
+    }
+
+    window.onChatButtonClick = function() {
+      showChat();
+    }
+  </script>
+</body>
+</html>

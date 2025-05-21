@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qpid - Gender</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      width: 59.615px;
+      height: 50.917px;
+    }
+
+    .qid {
+      color: #F0F;
+      font-family: 'Lobster', cursive;
+      font-size: 48px;
+      font-weight: 400;
+      margin-left: 10px;
+    }
+
+    .top-bar {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 23px;
+      margin-bottom: 40px;
+    }
+
+    .redo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 23px;
+      height: 23px;
+    }
+
+    .progress {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 11px;
+    }
+
+    .step.active {
+        background: #FF00FF;
+    }
+
+    .step {
+      width: 63px;
+      height: 8px;
+      border-radius: 12px;
+      background: #D9D9D9;
+    }
+    .question {
+      color: #000;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 40px;
+    }
+
+    .gender-option {
+      width: 402px;
+      height: 74px;
+      border-radius: 15px;
+      border: 1px solid #CCC;
+      display: flex;
+      align-items: center;
+      padding-left: 20px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: border 0.3s, background 0.3s;
+    }
+
+    .gender-option:hover {
+      border: 1px solid #FF00FF;
+    }
+
+    .circle {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: 1px solid #CCC;
+      margin-right: 15px;
+      background: none;
+      transition: background 0.3s, border 0.3s;
+    }
+
+    .gender-option.selected {
+      background: #F6F6F6;
+      border: 1px solid #707070;
+    }
+
+    .gender-option.selected .circle {
+      background: #F0F;
+      border: none;
+    }
+
+    .gender-text {
+      color: #000;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .continue-btn {
+      width: 144px;
+      height: 50px;
+      border-radius: 59px;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: Nunito, sans-serif;
+      border: none;
+      margin-top: 40px;
+      cursor: not-allowed;
+      color: #FFF;
+      background: #CCC;
+      pointer-events: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .continue-btn.active {
+      background: #FF00FF;
+      color: #000;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 450px) {
+      .gender-option {
+        width: 90%;
+      }
+
+      .top-bar-wrapper {
+        padding: 0 10px;
+      }
+    }
+    .top-bar-wrapper {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.redo-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.spacer {
+  width: 24px; /* same width as redo-icon to balance layout */
+  height: 24px;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img class="logo" src="sign in images/logo.png" alt="Logo">
+    <div class="qid">Qpid</div>
+  </div>
+
+  <!-- Top Bar with Redo Icon and Progress Bar -->
+  <div class="top-bar">
+    <img src="sign in images/redo.png" class="redo" alt="Redo" id="redoBtn">
+    <div class="progress">
+        <div class="step active"></div> <!-- Add this class to color it -->
+        <div class="step active"></div>
+        <div class="step active"></div>
+        <div class="step"></div>
+      </div>
+      
+  </div>
+  
+
+  <!-- Question -->
+  <div class="question">What’s your gender?</div>
+
+  <!-- Gender Options -->
+  <div class="gender-option" data-value="Man">
+    <div class="circle"></div>
+    <div class="gender-text">Man</div>
+  </div>
+  <div class="gender-option" data-value="Woman">
+    <div class="circle"></div>
+    <div class="gender-text">Woman</div>
+  </div>
+  <div class="gender-option" data-value="Nonbinary">
+    <div class="circle"></div>
+    <div class="gender-text">Nonbinary</div>
+  </div>
+
+  <!-- Continue Button -->
+  <button class="continue-btn" id="continueBtn">Continue</button>
+
+    <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.firebasestorage.app",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const options = document.querySelectorAll('.gender-option');
+    const continueBtn = document.getElementById('continueBtn');
+    let selectedValue = null;
+
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        options.forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedValue = option.getAttribute('data-value');
+        continueBtn.classList.add('active');
+        continueBtn.disabled = false;
+      });
+    });
+
+    continueBtn.addEventListener('click', () => {
+      if (!selectedValue) return;
+
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          db.collection("users").doc(user.uid).set({
+            gender: selectedValue
+          }, { merge: true }).then(() => {
+            window.location.href = "photo.html";
+          });
+        }
+      });
+    });
+
+    document.getElementById('redoBtn').addEventListener('click', () => {
+      history.back();
+    });
+    localStorage.removeItem("userName");
+
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://js.stripe.com/v3/"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qpid+ Premium</title>
+  <style>
+    
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #9b009b, #000);
+      color: white;
+    }
+    html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: linear-gradient(to bottom, #5A005A, #000);
+  overflow-x: hidden;
+}
+.container {
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 50px;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+    .close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 48px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .heading {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ff44e6;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .price {
+      font-size: 1rem;
+      margin-bottom: 40px;
+      text-align: left;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 30px;
+    }
+
+    .features-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 400px;
+    }
+
+    .features-table th,
+    .features-table td {
+      padding: 15px 10px;
+      text-align: center;
+    }
+
+    .features-table th:first-child,
+    .features-table td:first-child {
+      text-align: left;
+    }
+
+    .features-table th {
+      font-weight: bold;
+    }
+
+    .check {
+      font-size: 18px;
+    }
+
+    .footer-note {
+      font-size: 0.7rem;
+      color: gray;
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto 10px auto;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background-color: white;
+      color: black;
+      border: none;
+      border-radius: 999px;
+      font-weight: bold;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+    }
+    .container {
+  padding-left: 150px;
+  padding-right: 150px;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+    /* Mobile adjustments */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .heading {
+        font-size: 1.5rem;
+      }
+
+      .price {
+        font-size: 0.95rem;
+      }
+
+      .features-table th,
+      .features-table td {
+        padding: 12px 8px;
+        font-size: 0.9rem;
+      }
+
+      .btn {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+      }
+
+      .close {
+        top: 15px;
+        right: 20px;
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="close" onclick="closePayPlan()">&times;</div>
+    
+  <div class="container">
+
+    <div class="heading">
+      Unlimited Likes. Unlimited Rewinds. Able to see first photo. No ads.
+    </div>
+    <div class="price">30,000VND per month</div>
+
+    <div class="table-wrapper">
+      <table class="features-table">
+        <thead>
+          <tr>
+            <th>What you get:</th>
+            <th>Qpid+</th>
+            <th>Free</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Unlimited rewinds</td>
+            <td class="check">✓</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>Unlimited super likes</td>
+            <td class="check">✓</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>See who liked you</td>
+            <td class="check">✓</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ✅ Disclaimer goes before the button -->
+    <div class="footer-note">
+      By tapping "Continue", you will be charged, your subscription will auto-renew for the same price and package length until you cancel, and you agree to our Terms.
+    </div>
+
+    <!-- ✅ Button comes after the disclaimer -->
+    <button class="btn" id="checkout-button">Continue - Total 30,000VND</button>
+
+  </div>
+    <script>
+    function closePayPlan() {
+      // Send a message to close or revert to the previous screen
+      parent.postMessage({ action: 'closePayPlan' }, '*');
+    
+    }
+
+    fetch("http://localhost:4242/create-checkout-session", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  }
+})
+   const stripe = Stripe("pk_test_51RR3f9GauXhdX8os3xI6ruyM324IkrhumdPQ5bx6fWu4cuIWc3i9pTvA64EVMvsHErKx8sBYu1QP6LLZ3DPR4Iog00TaZgHeXn"); // replace with your real publishable key
+
+  const checkoutButton = document.getElementById("checkout-button");
+
+  checkoutButton.addEventListener("click", () => {
+    fetch("http://localhost:4242/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+    .then(res => res.json())
+    .then(data => {
+      return stripe.redirectToCheckout({ sessionId: data.id });
+    })
+    .then(result => {
+      if (result.error) {
+        alert(result.error.message);
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+    });
+  });
+  </script>
+</body>
+</html>

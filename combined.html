@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qpid</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background-color: black;
+      font-family: sans-serif;
+    }
+    .toggle-button {
+      display: flex;
+      align-items: center;
+      background-color: transparent;
+      border: 3px solid #ff00ff;
+      border-radius: 30px;
+      padding: 3px;
+      gap: 6px;
+      position: fixed;
+      top: 10px;
+      left: 62%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      width: 120px;
+    }
+    .icon-circle {
+      background-color: #ff00ff;
+      border-radius: 20px;
+      width: 50px;
+      height: 40px;
+      position: absolute;
+      transition: left 0.3s ease;
+      left: 3px;
+    }
+    .icon-logo, .icon-map {
+      width: 50px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      cursor: pointer;
+    }
+    .icon-map {
+      margin-left: auto;
+      height: 40px;
+    }
+    .icon-map img, .icon-logo img {
+      width: 60%;
+      height: 60%;
+      object-fit: contain;
+    }
+    .moved {
+      left: calc(100% - 55px);
+    }
+    iframe {
+      border: none;
+      height: 100%;
+      overflow: hidden;
+    }
+    .left-part {
+      width: 360px;
+    }
+    .right-part {
+      flex: 1;
+      position: relative;
+    }
+    .page {
+      display: none;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: none;
+    }
+    .page.active {
+      display: block !important;
+    }
+    iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+  </style>
+</head>
+<body>
+  <!-- Toggle -->
+  <div class="toggle-button">
+    <div class="icon-circle" id="iconCircle"></div>
+    <div class="icon-logo" id="iconLogo" onclick="showMain()">
+      <img src="image/logo black.png" alt="logo">
+    </div>
+    <div class="icon-map" id="iconMap" onclick="showMap()">
+      <img src="image/map pink.png" alt="map">
+    </div>
+  </div>
+
+  <!-- Left part -->
+  <iframe class="left-part" src="left part/left part.html"></iframe>
+
+  <!-- Right part -->
+  <div class="right-part">
+    <iframe class="page active" id="mainPage" src="main.html"></iframe>
+    <iframe class="page" id="mapPage" src="map.html"></iframe>
+    <iframe class="page" id="payPlanPage" src="payplan.html"></iframe>
+    <iframe class="page" id="chatPage" src="chat.html"></iframe>
+  </div>
+
+  <!-- Script -->
+<script>
+function setActivePage(activeId) {
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(page => {
+    page.classList.remove('active');
+  });
+  const activePage = document.getElementById(activeId);
+  if (activePage) {
+    activePage.classList.add('active');
+  }
+
+    const toggleButton = document.querySelector('.toggle-button');
+  if (activeId === 'mainPage' || activeId === 'mapPage') {
+    toggleButton.style.display = 'flex';
+  } else {
+    toggleButton.style.display = 'none';
+  }
+}
+
+  function showMain() {
+    setActivePage('mainPage');
+    document.getElementById('iconCircle').classList.remove('moved');
+    document.querySelector('#iconLogo img').src = 'image/logo black.png';
+    document.querySelector('#iconMap img').src = 'image/map pink.png';
+  }
+
+  function showMap() {
+    setActivePage('mapPage');
+    document.getElementById('iconCircle').classList.add('moved');
+    document.querySelector('#iconLogo img').src = 'image/logo pink.png';
+    document.querySelector('#iconMap img').src = 'image/map black.png';
+  }
+
+function showPayPlan() {
+  setActivePage('payPlanPage');
+}
+
+  function showChat() {
+    setActivePage('chatPage');
+  }
+
+  // Lắng nghe message từ iframe left part
+window.addEventListener('message', function(event) {
+  const action = event.data.action;
+  if (action === 'showPayPlan') {
+    showPayPlan();
+  } else if (action === 'showChat') {
+    showChat();
+  } else if (action === 'closePayPlan' || action === 'goBackToMain') {
+    showMain(); // Adjust as needed
+  }
+});
+</script> 
+
+
+
+</body>
+</html>

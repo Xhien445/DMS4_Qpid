@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qpid - Name Entry</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+      padding-top: 40px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    .logo {
+      width: 59.615px;
+      height: 50.917px;
+      flex-shrink: 0;
+    }
+    .qid {
+      color: #F0F;
+      font-family: 'Lobster', cursive;
+      font-size: 48px;
+      font-weight: 400;
+      margin-left: 10px;
+    }
+
+    .progress {
+      display: flex;
+      gap: 11px;
+      margin-bottom: 40px;
+    }
+    .step {
+      width: 63px;
+      height: 8px;
+      border-radius: 12px;
+      background: #D9D9D9;
+    }
+
+    .question {
+      color: #000;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 40px;
+    }
+
+    .input-box {
+      width: 364px;
+      height: 50px;
+      border-radius: 59px;
+      border: 1px solid #CCC;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      margin-bottom: 10px;
+      background: #fff;
+      text-align: center;
+
+    }
+
+    .name-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      font-weight: 500;
+      color: #000;
+      text-align: center;
+
+    }
+
+    .name-input::placeholder {
+      color: #5B5B5B;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .hint {
+      color: #5B5B5B;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 40px;
+    }
+
+    .continue-btn {
+      width: 144px;
+      height: 50px;
+      border-radius: 59px;
+      background: #CCC;
+      color: #FFF;
+      font-size: 20px;
+      font-weight: 700;
+      border: none;
+      cursor: not-allowed;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .continue-btn.active {
+      background: #FF00FF;
+      color: #000;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .qid {
+        font-size: 36px;
+      }
+      .question {
+        font-size: 20px;
+      }
+      .input-box {
+        width: 300px;
+      }
+    }
+    .step.active {
+        background: #FF00FF;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo and Qpid -->
+  <div class="header">
+    <img class="logo" src="sign in images/logo.png" alt="Logo">
+    <div class="qid">Qpid</div>
+  </div>
+
+  <!-- Progress Bars -->
+  <div class="progress">
+    <div class="step active"></div>
+    <div class="step"></div>
+    <div class="step"></div>
+    <div class="step"></div>
+  </div>
+
+  <!-- Question -->
+  <div class="question">Hi, what do you like to be called?</div>
+
+  <!-- Input Field -->
+  <div class="input-box">
+    <input
+      type="text"
+      class="name-input"
+      id="nameInput"
+      maxlength="25"
+      placeholder="Your name"
+    />
+  </div>
+
+  <!-- Hint Text -->
+  <div class="hint">This is how you’ll appear on Qpid</div>
+
+  <!-- Continue Button -->
+  <button class="continue-btn" id="continueBtn" disabled>Continue</button>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.firebasestorage.app",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const nameInput = document.getElementById('nameInput');
+    const continueBtn = document.getElementById('continueBtn');
+
+    nameInput.addEventListener('input', () => {
+      if (nameInput.value.trim().length > 0) {
+        continueBtn.classList.add('active');
+        continueBtn.disabled = false;
+      } else {
+        continueBtn.classList.remove('active');
+        continueBtn.disabled = true;
+      }
+    });
+
+    continueBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      if (name.length > 0 && name.length <= 25) {
+        localStorage.setItem("userName", name);
+        const user = auth.currentUser;
+if (user) {
+  db.collection("users").doc(user.uid).set({
+    name: name
+  }, { merge: true }).then(() => {
+    window.location.href = "./bday.html";
+  }).catch((error) => {
+    console.error("Error saving name:", error);
+    alert("There was an error saving your name. Please try again.");
+  });
+} else {
+  alert("User not logged in.");
+}
+
+      }
+    });
+  </script>
+</body>
+</html>

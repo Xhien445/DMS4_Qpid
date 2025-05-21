@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dating Profile</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .profile-card {
+      max-width: 480px;
+      width: 100%;
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+    .profile-header {
+      position: relative;
+      height: 698px; /* Adjust to ensure portrait size */
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    }
+    .profile-header img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .profile-header h1 {
+      z-index: 1;
+      font-size: 2rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); /* Add shadow */
+    }
+    .section {
+      padding: 20px;
+    }
+    .section h2 {
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 12px;
+    }
+    .bio-box {
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(255, 0, 255, 0.3);
+      border-radius: 60px;
+    }
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      background: #e5e5e5;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .chip img {
+      width: 16px; /* Size of the icons */
+      height: 16px;
+    }
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .gallery img {
+      width: 100%;
+      aspect-ratio: 350 / 698; /* Adjust ratio to match design */
+      object-fit: cover;
+      border-radius: 12px;
+    }
+    .mylife {
+      text-align: left;
+      margin-top: 20px;
+      padding: 20px;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 20px;
+      margin-top: 10px;
+    }
+    .actions img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      cursor: pointer;
+    }
+    .actions img.large {
+      width: 76px;
+      height: 76px;
+    }
+  </style>
+</head>
+<body>
+  <article class="profile-card">
+    <section class="profile-header">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/5762bb9a87f82886ed365904274e339a8b26bc95" alt="James" />
+      <h1>James, 26</h1>
+    </section>
+    <section class="section">
+      <h2>My Bio</h2>
+      <div class="bio-box">
+        Hi I am James, and I messed up Evan.
+      </div>
+    </section>
+    <section class="section">
+      <h2>About me</h2>
+      <div class="chips">
+        <div class="chip"><img src="image/job icon.png" alt="Job"> Finding for a job</div>
+        <div class="chip"><img src="image/study icon.png" alt="Study"> University</div>
+      </div>
+    </section>
+    <section class="section gallery">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/303dff4b97a512fd9fce42b8df089343e1e4d6c4" alt="Gallery 1" />
+    </section>
+    <section class="section">
+      <h2>My Life</h2>
+      <div class="chips">
+        <div class="chip"><img src="image/wine icon.png" alt="Wine"> Rarely</div>
+      </div>
+    </section>
+    <section class="section gallery">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/724ead8b1a7f5b7a92ace31e9317259455eced30" alt="Gallery 2" />
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d59303fcfcd8d019dd2b3013ae3a17f646c3085d" alt="Gallery 3" />
+    </section>
+    <section class="actions">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/4fcab4ea8090b33b44e7250e6be37cf90bc190ca" class="large" alt="Dislike" />
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/3145c87611cf349a2eec0351c9abff1ee862b95f" alt="Super Like" />
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/8e0f3e9f06333aadcbf7dd52392a890e35a402e4" class="large" alt="Like" />
+    </section>
+  </article>
+
+  <script>
+    // Implement swipe effect
+    document.querySelectorAll('.actions img').forEach((button, index) => {
+      button.addEventListener('click', () => {
+        if (index === 0) {
+          // Dislike button logic
+          alert('Disliked!');
+        } else if (index === 1) {
+          // Super Like button logic
+          alert('Super Liked!');
+        } else {
+          // Like button logic
+          alert('Liked!');
+        }
+      });
+    });
+    document.querySelectorAll('.profile-card').forEach(profileCard => {
+  profileCard.addEventListener('click', (event) => {
+    const profileId = profileCard.id; // Assuming each card has a unique ID like "card-james"
+    window.location.href = `profile-view.html?profile=${profileId}`;
+    event.stopPropagation(); // Prevent the click event from bubbling up
+  });
+});
+document.querySelectorAll('.profile-img').forEach(profileImg => {
+  profileImg.addEventListener('click', () => {
+    const profileId = profileImg.alt; // Use the alt attribute to identify
+    window.location.href = `profile-view.html?profile=${profileId}`;
+    document.getElementById('toggleButton').style.display = 'none'; // Hide the toggle button
+  });
+});
+
+// Show toggle button when returning to main page
+window.addEventListener('load', () => {
+  if (window.location.pathname.endsWith('main.html')) {
+    document.getElementById('toggleButton').style.display = 'block';
+  }
+});
+  </script>
+  
+</body>
+</html>

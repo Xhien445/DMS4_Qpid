@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    .body{
+        font-family: 'Nunito', sans-serif;
+    }
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+    .img {
+  border-radius: 50%;
+  border: 3px solid;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  overflow: hidden;
+  display: block;
+}
+    .my-avatar img,
+.other-avatar img {
+  border-radius: 50%;;
+  border: 3px solid;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.my-avatar {
+  border: #ff00ff; /* the border is already on the image */
+  
+}
+
+ .other-avatar {
+      border-color: black;
+     
+    }
+    .popup-content {
+        font-family: 'Nunito', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f3cee8;
+      border: 3px solid #ff00ff;
+      border-radius: 10px;
+      padding: 15px;
+      color: #6e205f;
+    }
+    .popup-header {
+      display: flex;
+      align-items: center;
+    }
+    .popup-header img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+    .chat-bar {
+      display: flex;
+      margin-top: 10px;
+    }
+    .chat-input {
+      width: 200px;
+      padding: 5px;
+      border: 2px solid #ff00ff;
+      border-radius: 5px 0 0 5px;
+      outline: none;
+    }
+    .send-button {
+      background-color: #ff00ff;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.appspot.com",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  const map = L.map('map').setView([51.505, -0.09], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+  }).addTo(map);
+
+  function applyOffset(lat, lon) {
+    const meters = 500;
+    const r = meters / 111300;
+    const angle = Math.random() * 2 * Math.PI;
+    const offsetLat = lat + r * Math.cos(angle);
+    const offsetLon = lon + r * Math.sin(angle) / Math.cos(lat * Math.PI / 180);
+    return [offsetLat, offsetLon];
+  }
+
+  // ⛳ Call this when you want to update the birthday (e.g., on button click)
+  function saveBirthday(year, month, day) {
+    const birthdayString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        db.collection("users").doc(user.uid).set({
+          birthday: birthdayString
+        }, { merge: true }).then(() => {
+          window.location.href = "gender.html";
+        }).catch(err => {
+          console.error("Error saving birthday:", err);
+        });
+      }
+    });
+  }
+
+  // 👇 Main app logic — map, markers, etc
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      const currentUserId = user.uid;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const userLat = position.coords.latitude;
+          const userLon = position.coords.longitude;
+          map.setView([userLat, userLon], 13);
+
+          db.collection("users").doc(currentUserId).get().then(doc => {
+            if (doc.exists) {
+              const data = doc.data();
+              const avatar = (data.profilePictures && data.profilePictures.length > 0)
+                ? data.profilePictures[0]
+                : "image/your-avatar.png";
+
+              L.marker([userLat, userLon], {
+  icon: L.divIcon({
+    className: 'my-avatar',
+    html: `<img src="${avatar}" class="avatar my-avatar" alt="You">`,
+    iconSize: [50, 50],
+    popupAnchor: [0, -25]
+  })
+}).addTo(map);
+            }
+          });
+        });
+      }
+
+      db.collection("users").get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const uid = data.uid || doc.id;
+          if (uid === currentUserId) return;
+
+          let age = "N/A";
+          let birthday = data.birthday;
+          if (typeof birthday === "string") {
+            birthday = new Date(birthday);
+            if (!isNaN(birthday)) {
+              const today = new Date();
+              age = today.getFullYear() - birthday.getFullYear();
+              const m = today.getMonth() - birthday.getMonth();
+              if (m < 0 || (m === 0 && today.getDate() < birthday.getDate())) {
+                age--;
+              }
+            }
+          }
+
+          const lat = data.location?.latitude ?? 51.505;
+          const lon = data.location?.longitude ?? -0.09;
+          const [offsetLat, offsetLon] = applyOffset(lat, lon);
+
+          const avatar = (data.profilePictures && data.profilePictures.length > 0)
+            ? data.profilePictures[0]
+            : "image/your-avatar.png";
+
+          const bio = `
+            🚻 ${data.gender || ''}<br>
+            💼 ${data.working || ''}<br>
+            🎓 ${data.education || ''}<br>
+            💪 ${data.exercise || ''}<br>
+            🍷 ${data.drinking || ''}<br>
+            🚬 ${data.smoking || ''}<br>
+            ♈ ${data.zodiac || ''}
+          `;
+
+          const icon = L.divIcon({
+  className: 'other-avatar',
+  html: `<img src="${avatar}" class="avatar other-avatar" alt="${data.name}">`,
+  iconSize: [50, 50],
+  popupAnchor: [0, -25]
+});
+
+
+          const marker = L.marker([offsetLat, offsetLon], { icon }).addTo(map);
+          marker.bindPopup(`
+            <div class="popup-content">
+              <div class="popup-header">
+                <img src="${avatar}" alt="Avatar" class="avatar">
+
+                <div>
+                  <strong>${data.name}, ${age}</strong>
+                  <p>${bio}</p>
+                </div>
+              </div>
+              <div class="chat-bar">
+                <input type="text" class="chat-input" placeholder="Let's hook up!">
+                <button class="send-button">&#9658;</button>
+              </div>
+            </div>
+          `);
+        });
+      });
+    } else {
+      console.error("User is not authenticated.");
+    }
+  });
+</script>
+
+</body>
+</html>

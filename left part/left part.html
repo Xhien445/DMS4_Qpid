@@ -1,0 +1,754 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dating App Sidebar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    
+body {
+  margin: 0;
+  font-family: 'Urbanist', sans-serif;
+  background-color: #000;
+  color: white;
+  height: 100vh;
+  font-family: 'Nunito', sans-serif;
+}
+
+.profile-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.sidebar {
+  background-color: black;
+  width: 320px;
+  padding: 24px;
+  border-right: 2px solid #555;
+  overflow-y: auto;
+  padding-left: 24px;
+  padding-right: 12px;
+}
+
+.chat-container,
+#chat-container {
+  flex-grow: 1;
+  padding: 20px;
+  border-left: 2px solid #555;
+  display: none; /* Initially hidden */
+  overflow-y: auto;
+  color: white;
+}
+
+iframe {
+  flex-grow: 1;
+  border: none;
+  display: none; /* Initially hidden */
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile img {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  margin-right: 15px;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 12px;
+}
+
+.profile-info div {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.complete-profile {
+  background-color: #ff00ff;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.complete-profile span {
+  display: inline-block;
+  transition: opacity 0.3s ease;
+}
+
+.complete-profile-btn {
+  margin-top: 4px;
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+.buttons img {
+  width: 23px;
+  height: 22px;
+  margin-left: 12px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.heading {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+  color: #fff;
+}
+
+.match-queue {
+  display: flex;
+  overflow-x: auto;
+  margin-bottom: 25px;
+}
+
+.match-queue img,
+.conversations img {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: 4px solid #ff00ff;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.match-images {
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px;
+}
+
+.conversations {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.conversations li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 22px;
+  cursor: pointer;
+}
+
+.conversations img {
+  width: 48px;
+  height: 48px;
+  margin-right: 14px;
+}
+
+.conversations .name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.conversations .selected .name {
+  color: #ff00ff;
+}
+
+.conversations .selected .message {
+  font-weight: 600;
+  color: #eee;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ff00ff;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+#menu-content,
+#main-content,
+#insight-content {
+  display: none;
+}
+
+#menu-content .heading {
+  margin-top: 20px;
+}
+
+.pay-plan {
+  margin-bottom: 20px;
+}
+
+.plan-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ff00ff;
+}
+
+.explore-premium-btn {
+  background-color: white;
+  color: #ff00ff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.plan-details {
+  padding: 0 10px;
+}
+
+.plan-details .heading {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.plan-details ul {
+  list-style: none;
+  padding: 0;
+}
+
+.plan-details li {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.checkmark {
+  color: #aaa;
+  margin-left: 5px;
+}
+
+.pay-plan-box {
+  background: linear-gradient(to bottom, #ff00ff, #000000);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pay-plan-box .plan-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.pay-plan-box p {
+  font-size: 14px;
+  color: white;
+  margin-bottom: 15px;
+}
+
+.pay-plan-heading {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.pay-plan-subtext {
+  font-size: 14px;
+  margin: 10px 0 20px;
+}
+
+.plan-benefits {
+  background: transparent;
+  text-align: left;
+  font-size: 14px;
+}
+
+.benefit-header {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.benefit-header .columns {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5px;
+  font-size: 14px;
+}
+
+.benefit-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.toggle-btn {
+  background-color: black;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle-btn.active {
+  background-color: white;
+  color: black;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.left-section,
+.right-section {
+  flex: 1;
+}
+
+#notification-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: black;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.notification-panel {
+  border-right: 2px solid #555;
+  background-color: black;
+  width: 320px;
+  padding: 24px;
+  overflow-y: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+#back-from-notification {
+  border: none;
+  background: none;
+  font-size: 20px;
+  margin-right: 12px;
+  color: white;
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <div class="sidebar">
+      <div class="top-bar">
+        <div class="profile">
+          <img  alt="Profile Picture" id="profile-image">
+          <div class="profile-info">
+            <div id="profile-name">user's name</div>
+            <a href="#" class="complete-profile" id="complete-profile-link"><span>Complete profile</span></a>
+
+          </div>
+        </div>
+        <div class="buttons">
+          <a href="#"><img src="bell.png" alt="Notifications" id="s-butnotificationton"></a>
+        </div>
+      </div>
+
+      <div id="payPlanButtons" class="toggle-buttons">
+        <button id="payPlanBtn" class="toggle-btn active">Pay plan</button>
+        <button id="insightBtn" class="toggle-btn">Profile insights</button>
+      </div>
+
+      <div id="main-content" style="display: block;">
+        <div class="heading" id="main-heading">Match Queue</div>
+        <div class="match-queue" id="match-queue-section">
+          <img src="jame 2.jpg" alt="Matched User">
+          <img src="jame pro 2.jpg" alt="Matched User">
+        </div>
+        
+<!-- Nằm ngoài main-content -->
+<div id="insight-content" style="display: none;">
+  <article class="profile-card">
+    <section class="profile-header">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/8bcf73faebffed139924196474917a50c089198f" alt="My Profile Picture" />
+      <h1>Me, 24</h1>
+    </section>
+
+    <section class="section">
+      <h2><span>My Bio</span></h2>
+      <div class="bio-box">Me eat kids</div>
+    </section>
+
+    <section class="section">
+      <h2><span>About me</span></h2>
+      <div class="chips">
+        <div class="chip">
+          <img src="image/job icon.png" alt="Job icon" />
+          Finding for a job
+        </div>
+        <div class="chip">
+          <img src="image/study icon.png" alt="Study icon" />
+          University
+        </div>
+      </div>
+    </section>
+
+    <section class="section gallery">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/6fc0bf164cdc79c62a9d880dc5641d6718095f7a" alt="Gallery 1" />
+    </section>
+
+    <section class="section">
+      <h2><span>My Life</span></h2>
+      <div class="chips">
+        <div class="chip">
+          <img src="image/wine icon.png" alt="Wine icon" />
+          Rarely
+        </div>
+      </div>
+    </section>
+
+    <section class="section gallery">
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/0f1a5e82ab047327234514870211cdc92e0e3841" alt="Gallery 2" />
+      <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d2242319bcda318d153c7e949eca67ab4afe7dbb" alt="Gallery 3" />
+    </section>
+
+    <section class="section">
+      <h2>
+        <img src="image/location icon.png" alt="Location icon" />
+        <span>My location</span>
+      </h2>
+      <div class="location-row">Ho Chi Minh city</div>
+    </section>
+  </article>
+</div>
+
+
+        <div class="heading" id="conversations-heading">Conversations</div>
+        <ul class="conversations" id="conversations-list">
+          <li onclick="parent.loadContent('chat.html')">
+            <img src="jame charles.jpg" alt="User Image">
+            <div>
+              <div class="name">James Charles</div>
+              <div class="message">hi gurlllll</div>
+            </div>
+            <div class="dot"></div>
+          </li>
+        </ul>
+      </div>
+
+      <div id="menu-content" style="display: none;">
+        <div class="pay-plan-box">
+          <div class="plan-title">Qpid+</div>
+          <p>Get the V.I.P. treatment and enjoy better ways to connect with incredible people</p>
+          <button class="explore-premium-btn" onclick="exploreMore()">Explore Premium+</button>
+        </div>
+        <div class="benefit-row">
+          <span>Unlimited rewinds</span>
+          <span>✓</span>
+          <span>-</span>
+        </div>
+        <div class="benefit-row">
+          <span>See who liked you</span>
+          <span>✓</span>
+          <span>-</span>
+        </div>
+        <div class="benefit-row">
+          <span>More..</span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-container" id="chat-container">
+      <!-- Chat content will be loaded here -->
+    </div>
+  </div>
+
+    <!-- PAY PLAN -->
+ <!-- Notification Page -->
+<div id="notification-page" style="display: none; flex-direction: column; height: 100%;">
+  <!-- Notification Header -->
+  <div style="display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #ccc; background-color: rgb(0, 0, 0);">
+    <button id="back-from-notification" style="border: none; background: none; font-size: 20px; margin-right: 12px;">←</button>
+    <span style="font-size: 18px; font-weight: bold;">Notification</span>
+  </div>
+
+  <!-- Notification Content -->
+  <div style="padding: 16px;">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+      <img src="image/jame white face.jpg" alt="avatar" style="width: 48px; height: 48px; border-radius: 50%;">
+      <div>
+        <span style="font-weight: bold; font-size: 16px;">Alex</span>
+        <span style="font-size: 14px;"> just super liked you</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>  
+
+ <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.appspot.com",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      const userDocRef = db.collection("users").doc(user.uid);
+      const userDoc = await userDocRef.get();
+      if (userDoc.exists) {
+        const data = userDoc.data();
+
+        // Update profile name
+        if (data.name) {
+          document.getElementById("profile-name").textContent = data.name;
+        }
+
+        // Update profile picture
+        if (data.profilePictures) {
+          document.getElementById("profile-image").src = data.profilePictures;
+        }
+      } else {
+        console.log("User document not found in Firestore");
+      }
+    } else {
+      console.log("User not signed in");
+    }
+  });
+  document.getElementById('complete-profile-link').addEventListener('click', function(event) {
+    event.preventDefault();
+    parent.loadContent('payplan.html');
+  });
+</script>
+<script>
+  function handleCompleteProfileClick() {
+    console.log('Complete profile clicked');
+    parent.window.onCompleteProfileClick();
+  }
+
+  function handleChatButtonClick() {
+    console.log('Chat button clicked');
+    parent.window.onChatButtonClick();
+  }
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const completeProfileLink = document.getElementById('complete-profile-link');
+    const mainContent = document.getElementById('main-content');
+    const menuContent = document.getElementById('menu-content');
+    const insightContent = document.getElementById('insight-content');
+    const payPlanButtons = document.getElementById('payPlanButtons');
+    const payBtn = document.getElementById("payPlanBtn");
+    const profileBtn = document.getElementById("insightBtn");
+    
+    // Initial state
+    menuContent.style.display = 'none';
+    insightContent.style.display = 'none';
+    mainContent.style.display = 'block';
+    payPlanButtons.style.display = 'none';
+
+    completeProfileLink.addEventListener('click', function (event) {
+      event.preventDefault();
+      const isPayPlanVisible = menuContent.style.display === 'block';
+      const span = completeProfileLink.querySelector('span');
+      // Change button text with fade
+      span.style.opacity = 0;
+      setTimeout(() => {
+        span.textContent = isPayPlanVisible ? 'Complete profile' : 'Conversation';
+        span.style.opacity = 1;
+        menuContent.style.display = isPayPlanVisible ? 'none' : 'block';
+        insightContent.style.display = isPayPlanVisible ? 'none' : 'none';
+        mainContent.style.display = isPayPlanVisible ? 'block' : 'none';
+        payPlanButtons.style.display = isPayPlanVisible ? 'none' : 'flex';
+      }, 300);
+    });
+
+    payBtn.addEventListener('click', () => {
+      payBtn.classList.add('active');
+      profileBtn.classList.remove('active');
+      menuContent.style.display = 'block';
+      insightContent.style.display = 'none';
+    });
+
+    profileBtn.addEventListener('click', () => {
+      profileBtn.classList.add('active');
+      payBtn.classList.remove('active');
+      menuContent.style.display = 'none';
+      insightContent.style.display = 'block';
+    });
+
+    // Optional: handle chat click
+    const jamesCharlesChat = document.querySelector('#conversations-list li');
+    if (jamesCharlesChat) {
+      jamesCharlesChat.addEventListener('click', function () {
+        parent.postMessage({ action: 'showChat' }, '*');
+      });
+    }
+  });
+
+  function exploreMore() {
+    window.parent.postMessage({ action: 'showPayPlan' }, '*');
+  }
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const bellButton = document.getElementById('s-butnotificationton');
+    const notificationPage = document.getElementById('notification-page');
+    const mainContent = document.getElementById('main-content');
+    const menuContent = document.getElementById('menu-content');
+    const insightContent = document.getElementById('insight-content');
+    const payPlanButtons = document.getElementById('payPlanButtons');
+    const header = document.querySelector('header'); // header toàn trang
+
+    bellButton.addEventListener('click', function (event) {
+      event.preventDefault();
+
+      // Ẩn toàn bộ nội dung không liên quan
+      mainContent.style.display = 'none';
+      menuContent.style.display = 'none';
+      insightContent.style.display = 'none';
+      payPlanButtons.style.display = 'none';
+      if (header) header.style.display = 'none';
+
+      // Hiện phần thông báo và cuộn lên đầu
+      notificationPage.style.display = 'flex';
+      window.scrollTo(0, 0); // đảm bảo phần noti ở đầu
+    });
+
+    // Nút quay lại từ trang thông báo (nếu có)
+    const backButton = document.getElementById('back-from-notification');
+    if (backButton) {
+      backButton.addEventListener('click', function () {
+        notificationPage.style.display = 'none';
+        mainContent.style.display = 'block';
+        if (header) header.style.display = 'block';
+      });
+    }
+  });
+</script>
+
+  <script>
+
+    document.getElementById('showInsights').addEventListener('click', function () {
+      const insightFrame = document.getElementById('insightFrame');
+      insightFrame.src = 'profile-insight.html'; // Load the profile insights page
+      insightFrame.style.display = 'block'; // Show the iframe
+    });
+  </script>
+  <script>
+  function setLeftPage(activeId) {
+    const pages = document.querySelectorAll('.left-part .page');
+    pages.forEach(page => page.classList.remove('active'));
+    const activePage = document.getElementById(activeId);
+    if (activePage) {
+      activePage.classList.add('active');
+    }
+  }
+</script>
+<script>
+  document.getElementById('notifications-button').addEventListener('click', function() {
+    window.parent.postMessage({ action: 'showNotification' }, '*');
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const notificationBtn = document.getElementById('s-butnotificationton');
+    const notificationPage = document.getElementById('notification-page');
+    const backBtn = document.getElementById('back-from-notification');
+    const header = document.querySelector('header');
+
+    notificationBtn.addEventListener('click', function () {
+      notificationPage.style.display = 'flex';
+      if (header) header.style.display = 'none';
+      document.getElementById('main-content')?.style.display = 'none';
+      document.getElementById('menu-content')?.style.display = 'none';
+      document.getElementById('insight-content')?.style.display = 'none';
+    });
+
+    backBtn.addEventListener('click', function () {
+      notificationPage.style.display = 'none';
+      if (header) header.style.display = 'flex';
+      document.getElementById('main-content')?.style.display = 'block';
+    });
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const bellButton = document.getElementById('s-butnotificationton');
+    const notificationPage = document.getElementById('notification-page');
+    const mainContent = document.getElementById('main-content');
+    const menuContent = document.getElementById('menu-content');
+    const insightContent = document.getElementById('insight-content');
+    const payPlanButtons = document.getElementById('payPlanButtons');
+    const header = document.querySelector('header'); // header toàn trang
+
+    bellButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      // Ẩn toàn bộ nội dung không liên quan
+      mainContent.style.display = 'none';
+      menuContent.style.display = 'none';
+      insightContent.style.display = 'none';
+      payPlanButtons.style.display = 'none';
+      if (header) header.style.display = 'none';
+
+      // Hiện phần thông báo và cuộn lên đầu
+      notificationPage.style.display = 'flex';
+      window.scrollTo(0, 0); // đảm bảo phần noti ở đầu
+    });
+
+    // Nút quay lại từ trang thông báo (nếu có)
+    const backButton = document.getElementById('back-from-notification');
+    if (backButton) {
+      backButton.addEventListener('click', function () {
+        notificationPage.style.display = 'none';
+        mainContent.style.display = 'block';
+        if (header) header.style.display = 'block';
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

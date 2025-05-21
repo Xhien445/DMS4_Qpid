@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qpid sign in</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <script>
+  function detectDevice() {
+    const isMobile = /iPhone|iPad|iPod|Android|Phone|Mobile/i.test(navigator.userAgent) || window.innerWidth < 1024;
+    if (isMobile) {
+      window.location.href = "nophoneallowed.html"; // Redirect to a dedicated page for mobile users
+    }
+  }
+</script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+      padding-top: 40px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .logo {
+      width: 59.615px;
+      height: 50.917px;
+      flex-shrink: 0;
+    }
+    .quid {
+      color: #F0F;
+      font-family: 'Lobster', cursive;
+      font-size: 48px;
+      font-weight: 400;
+      margin-left: 10px;
+    }
+    .welcome-text {
+      color: #000;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 40px;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+    .sign-btn {
+      width: 240px;
+      height: 50px;
+      border-radius: 59px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: background-color 0.2s ease;
+    }
+    .apple-button {
+      background-color: #000;
+      color: #FFF;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .phone-button {
+      background-color: transparent;
+      color: #F0F;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .phone-button:hover {
+      background-color: #FFFFFF;
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .line {
+      width: 104px;
+      height: 1px;
+      background-color: #BCBCBC;
+    }
+    .or-text {
+      color: #5B5B5B;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .phone-signup {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .phone-caption {
+      color: #5B5B5B;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .phone-input-box {
+      width: 364px;
+      height: 50px;
+      border-radius: 59px;
+      border: 1px solid #CCC;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 10px;
+      background: #fff;
+    }
+    .phone-input-box span {
+      color: #000;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .phone-input {
+      border: none;
+      outline: none;
+      flex: 1;
+      font-size: 16px;
+      color: #000;
+      padding-left: 5px;
+    }
+    .phone-input::placeholder {
+      color: #5B5B5B;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .continue-btn {
+      width: 144px;
+      height: 50px;
+      border-radius: 59px;
+      background: #CCC;
+      color: #FFF;
+      font-size: 20px;
+      font-weight: 700;
+      border: none;
+      cursor: not-allowed;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .continue-btn.active {
+      background: #FF00FF;
+      color: #000;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .quid { font-size: 36px; }
+      .welcome-text { font-size: 20px; }
+      .sign-btn { width: 200px; height: 45px; }
+      .phone-input-box { width: 300px; }
+    }
+    #vercode-section {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.instruction {
+  text-align: center;
+  color: #000;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.code-input {
+  width: 45px;
+  height: 50px;
+  font-size: 24px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.code-input:focus {
+  border-color: #fc5831;
+  box-shadow: 0 0 3px #fc5831;
+}
+
+.change-number {
+  color: #5B5B5B;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#verify-code-btn {
+  width: 240px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 20px;
+  color: #000;
+  background-color: #d9d9d9;
+  cursor: not-allowed;
+  transition: background 0.3s, color 0.3s, cursor 0.3s;
+}
+
+#verify-code-btn.active {
+  background: linear-gradient(to right, #fc5831, #ff00ff);
+  color: white;
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img class="logo" src="sign in images/logo.png" alt="Logo">
+    <div class="quid">Qpid</div>
+  </div>
+
+  <div class="welcome-text">Welcome! How do you want to get started?</div>
+
+  <div class="button-container" id="button-container">
+    <button class="sign-btn apple-button">Continue with Gmail</button>
+    <div class="divider">
+      <div class="line"></div>
+      <div class="or-text">or</div>
+      <div class="line"></div>
+    </div>
+    <button class="sign-btn phone-button" id="phone-button">Use cell phone number</button>
+  </div>
+
+  <div class="phone-signup" id="phone-signup">
+    <div class="phone-caption">Sign up with your number instead</div>
+    <div class="phone-input-box">
+      <span>+84</span>
+      <input type="text" maxlength="10" placeholder="Enter your number" class="phone-input" id="phone-input"/>
+    </div>
+    <button class="continue-btn" id="continue-btn">Continue</button>
+    <div id="recaptcha-container"></div>
+  </div>
+
+  <div class="vercode-section" id="vercode-section" style="display: none; flex-direction: column; align-items: center; gap: 20px; margin-top: 40px;">
+    <div class="instruction" style="text-align: center; color: #000; font-size: 20px; font-weight: 700;">Please enter the 6-digit code we just sent you</div>
+    <div class="code-inputs" style="display: flex; justify-content: center; gap: 10px;">
+      <input type="text" maxlength="1" inputmode="numeric" class="code-input">
+      <input type="text" maxlength="1" inputmode="numeric" class="code-input">
+      <input type="text" maxlength="1" inputmode="numeric" class="code-input">
+      <input type="text" maxlength="1" inputmode="numeric" class="code-input">
+      <input type="text" maxlength="1" inputmode="numeric" class="code-input">
+      <input type="text" maxlength="1" inputmode="numeric" class="code-input">
+    </div>
+    <div class="change-number" onclick="location.reload()" style="color: #5B5B5B; font-size: 14px; cursor: pointer;">Change number</div>
+    <div class="continue-btn" id="verify-code-btn" style="background-color: #d9d9d9; width: 240px; cursor: not-allowed;">Continue</div>
+  </div>
+
+  <!-- Firebase SDKs -->
+ <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script>
+  
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.firebasestorage.app",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  
+</script>
+
+<!-- Phone Auth Script -->
+<script>
+  const phoneButton = document.getElementById('phone-button');
+  const phoneSignup = document.getElementById('phone-signup');
+  const phoneInput = document.getElementById('phone-input');
+  const continueBtn = document.getElementById('continue-btn');
+
+  phoneButton.addEventListener('click', () => {
+    phoneButton.style.display = 'none';
+    phoneSignup.style.display = 'flex';
+  });
+
+  phoneInput.addEventListener('input', () => {
+    const value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+    phoneInput.value = value;
+    const isValid = /^\d{9}$/.test(value);
+    continueBtn.classList.toggle('active', isValid);
+    continueBtn.disabled = !isValid;
+  });
+
+  window.onload = function () {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      'size': 'invisible',
+      'callback': function (response) {
+        sendVerificationCode();
+      }
+    });
+    recaptchaVerifier.render();
+  };
+
+  
+
+  continueBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (!continueBtn.classList.contains("active")) return;
+    sendVerificationCode();
+  });
+   // Existing: sendVerificationCode
+   function sendVerificationCode() {
+    const phoneNumber = "+84" + phoneInput.value;
+    const appVerifier = window.recaptchaVerifier;
+
+    firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+      .then((confirmationResult) => {
+        window.confirmationResult = confirmationResult;
+        document.getElementById('vercode-section').style.display = 'flex';
+        phoneInput.disabled = true;
+        continueBtn.style.display = 'none';
+      })
+      .catch((error) => {
+        console.error("SMS not sent", error);
+        alert("SMS not sent: " + error.message);
+      });
+  }
+
+  // Verification Code Handling
+  const codeInputs = document.querySelectorAll('.code-input');
+  const verifyBtn = document.getElementById('verify-code-btn');
+
+  codeInputs.forEach((input, idx) => {
+    input.addEventListener('input', () => {
+      if (input.value.length === 1 && idx < codeInputs.length - 1) {
+        codeInputs[idx + 1].focus();
+      }
+      checkCodeComplete();
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && input.value === '' && idx > 0) {
+        codeInputs[idx - 1].focus();
+      }
+    });
+  });
+
+  function checkCodeComplete() {
+  const code = Array.from(codeInputs).map(input => input.value.trim()).join('');
+  if (code.length === 6 && /^[0-9]{6}$/.test(code)) {
+    verifyBtn.classList.add('active');
+    verifyBtn.onclick = async () => {
+      try {
+        const result = await window.confirmationResult.confirm(code);
+        const user = result.user;
+        const userDoc = await db.collection("users").doc(user.uid).get();
+if (userDoc.exists) {
+  window.location.href = 'combined.html';
+} else {
+  window.location.href = 'new-sign-in.html';
+}
+
+      } catch (error) {
+        alert("Invalid code. Please try again.");
+      }
+    };
+  } else {
+    verifyBtn.classList.remove('active');
+    verifyBtn.onclick = null;
+  }
+}
+
+ // Select the Gmail button
+ const gmailButton = document.querySelector('.apple-button');
+
+// Add an event listener for the Gmail button
+gmailButton.addEventListener('click', () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  firebase.auth().signInWithPopup(provider)
+    .then(async (result) => {
+      const user = result.user;
+      const userDoc = await db.collection("users").doc(user.uid).get();
+
+      if (userDoc.exists) {
+        window.location.href = 'combined.html';
+      } else {
+        window.location.href = 'new-sign-in.html';
+      }
+    })
+    .catch((error) => {
+      console.error('Error during sign-in:', error.message);
+      alert('Sign-in failed: ' + error.message);
+    });
+});
+ 
+
+ 
+</script>
+
+</body>
+</html>

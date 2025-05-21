@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Underage Warning</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .glitch-wrapper {
+            position: relative;
+        }
+
+        .glitch {
+            font-size: 2em;
+            position: relative;
+            animation: glitch 1s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 2px 0 red, -2px -2px 0 blue;
+                clip: rect(24px, 550px, 90px, 0);
+            }
+            20% {
+                text-shadow: -2px -2px 0 red, 2px 2px 0 blue;
+                clip: rect(0px, 550px, 0px, 0);
+            }
+            40% {
+                text-shadow: 2px -2px 0 blue, -2px 2px 0 red;
+                clip: rect(64px, 550px, 80px, 0);
+            }
+            60% {
+                text-shadow: 2px 2px 0 blue, -2px -2px 0 red;
+                clip: rect(34px, 550px, 90px, 0);
+            }
+            80% {
+                text-shadow: -2px 2px 0 blue, 2px -2px 0 red;
+                clip: rect(14px, 550px, 40px, 0);
+            }
+            100% {
+                text-shadow: 2px -2px 0 red, -2px 2px 0 blue;
+                clip: rect(24px, 550px, 90px, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch-wrapper">
+        <div class="glitch" data-text="You are underage kid">You are underage kid</div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // Disable back navigation on load
+            window.history.pushState(null, "", window.location.href);
+            window.onpopstate = function() {
+                window.history.pushState(null, "", window.location.href);
+            };
+        };
+    </script>
+</body>
+</html>

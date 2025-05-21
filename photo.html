@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qpid - Photo Upload</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      width: 59.615px;
+      height: 50.917px;
+    }
+
+    .qid {
+      color: #F0F;
+      font-family: 'Lobster', cursive;
+      font-size: 48px;
+      font-weight: 400;
+      margin-left: 10px;
+    }
+
+    .top-bar {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 23px;
+      margin-bottom: 40px;
+    }
+
+    .redo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 23px;
+      height: 23px;
+      cursor: pointer;
+    }
+
+    .progress {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 11px;
+    }
+
+    .step {
+      width: 63px;
+      height: 8px;
+      border-radius: 12px;
+      background: #D9D9D9;
+    }
+
+    .step.active {
+      background: #FF00FF;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .subtitle {
+      color: #5B5B5B;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 30px;
+      width: 80%;
+      max-width: 440px;
+    }
+
+    .upload-area {
+      width: 441px;
+      height: 162px;
+      border-radius: 25px;
+      border: 1px solid #F0F;
+      background: #FFDFFF;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #F0F;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 40px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .upload-area.dragover {
+      background: #f0c0f0;
+    }
+
+    .images-grid {
+      display: none;
+      width: 320px;
+      display: grid;
+      grid-template-columns: repeat(3, 92px);
+      grid-template-rows: repeat(2, 92px);
+      gap: 10px 30px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .image-wrapper {
+      width: 92px;
+      height: 92px;
+      border-radius: 9px;
+      border: 3px dashed #F0F;
+      background: #fff;
+      position: relative;
+      overflow: visible;
+    }
+
+    .image-wrapper.uploaded {
+      border: none;
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 9px;
+    }
+
+    .circle-btn {
+      width: 25px;
+      height: 25px;
+      position: absolute;
+      bottom: -12.5px;
+      right: -12.5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #FFF;
+      border: 2px solid #E2E2E2;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .circle-btn.empty {
+      background: #F0F;
+      border: 2px solid #000;
+    }
+
+    .circle-btn img {
+      width: 16px;
+      height: 16px;
+    }
+
+    .continue-btn {
+      width: 144px;
+      height: 50px;
+      border-radius: 59px;
+      background: #CCC;
+      color: #FFF;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: Nunito;
+      text-align: center;
+      border: none;
+      cursor: not-allowed;
+      pointer-events: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .continue-btn.active {
+      background: #FF00FF;
+      color: #000;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 450px) {
+      .upload-area, .subtitle {
+        width: 90%;
+      }
+
+      .images-grid {
+        width: 90%;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
+      }
+    }
+    
+
+
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <img class="logo" src="sign in images/logo.png" alt="Logo">
+    <div class="qid">Qpid</div>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <img src="sign in images/redo.png" class="redo" id="redoBtn" alt="Back">
+    <div class="progress">
+      <div class="step active"></div>
+      <div class="step active"></div>
+      <div class="step active"></div>
+      <div class="step active"></div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="title">Now it’s time to upload some photos</div>
+  <div class="subtitle">
+    Adding photos is a great way to show off more about yourself! You can drag your photos right from your desktop.
+  </div>
+
+  <div class="upload-area" id="uploadArea">Drag and drop photos here!</div>
+
+  <div class="images-grid" id="imagesGrid"></div>
+
+  <button class="continue-btn" id="continueBtn">Continue</button>
+
+  <input type="file" id="fileInput" accept="image/png, image/jpeg" multiple style="display:none"/>
+
+  
+
+  
+<script>
+  // Firebase configuration and initialization
+  const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.firebasestorage.app",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const storageRef = firebase.storage().ref();
+
+  // DOM elements
+  const uploadArea = document.getElementById('uploadArea');
+  const imagesGrid = document.getElementById('imagesGrid');
+  const fileInput = document.getElementById('fileInput');
+  const continueBtn = document.getElementById('continueBtn');
+  let images = [];
+
+  // Check user authentication on page load
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      console.log('User is signed in:', user);
+    } else {
+      console.log('No user is signed in.');
+    }
+  });
+
+  // Update UI to reflect selected images
+  function updateUI() {
+    uploadArea.style.display = images.length === 0 ? 'flex' : 'none';
+    imagesGrid.style.display = images.length > 0 ? 'grid' : 'none';
+    imagesGrid.innerHTML = '';
+    
+    images.forEach((image, index) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'image-wrapper uploaded';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(image);
+      wrapper.appendChild(img);
+      
+      const circle = document.createElement('div');
+      circle.className = 'circle-btn';
+      const xIcon = document.createElement('img');
+      xIcon.src = 'sign in images/X.png';
+      circle.appendChild(xIcon);
+      circle.onclick = () => {
+        images.splice(index, 1);
+        updateUI();
+      };
+      wrapper.appendChild(circle);
+      imagesGrid.appendChild(wrapper);
+    });
+
+    while (imagesGrid.children.length < 6) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'image-wrapper';
+      const circle = document.createElement('div');
+      circle.className = 'circle-btn empty';
+      const plusIcon = document.createElement('img');
+      plusIcon.src = 'sign in images/plus.png';
+      circle.appendChild(plusIcon);
+      circle.onclick = () => fileInput.click();
+      wrapper.appendChild(circle);
+      imagesGrid.appendChild(wrapper);
+    }
+    
+    continueBtn.classList.toggle('active', images.length > 0);
+  }
+
+  // Handle files selected (store locally only)
+  function handleFiles(files) {
+    files.forEach(file => {
+      if ((file.type === 'image/png' || file.type === 'image/jpeg') && images.length < 6) {
+        images.push(file);
+        updateUI();
+      }
+    });
+  }
+
+  // Continue button click: upload all selected images
+  continueBtn.addEventListener('click', async () => {
+    if (images.length === 0) return;
+    
+    const user = firebase.auth().currentUser;
+    if (!user) {
+      alert('Please sign in first to upload images.');
+      return;
+    }
+
+    try {
+      const downloadURLs = [];
+      for (const file of images) {
+        const uniqueName = `${Date.now()}_${Math.random().toString(36).substring(2, 10)}_${file.name}`;
+        const userFolder = `profile_pics/${user.uid}/${uniqueName}`;
+        console.log('Uploading to:', userFolder);
+        
+        const snapshot = await storageRef.child(userFolder).put(file);
+        const downloadURL = await snapshot.ref.getDownloadURL(); // Ensure this function is available
+        downloadURLs.push(downloadURL);
+      }
+
+      await db.collection('users').doc(user.uid).update({
+  profilePictures: downloadURLs,
+  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+});
+
+
+      window.location.href = 'location.html';
+    } catch (error) {
+      console.error('Error uploading or saving images:', error);
+      alert('Failed to upload images. Please try again.');
+    }
+  });
+
+  // Drag-and-drop support
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const files = Array.from(e.dataTransfer.files);
+    handleFiles(files);
+  });
+
+  // Other event listeners
+  uploadArea.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => handleFiles(Array.from(e.target.files)));
+  document.getElementById('redoBtn').addEventListener('click', () => history.back());
+  updateUI();
+  
+</script>
+
+</body>
+</html>

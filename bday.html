@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qpid - Birthday</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f5f5f5;
+      padding-top: 40px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    .logo {
+      width: 59.615px;
+      height: 50.917px;
+      flex-shrink: 0;
+    }
+    .qid {
+      color: #F0F;
+      font-family: 'Lobster', cursive;
+      font-size: 48px;
+      font-weight: 400;
+      margin-left: 10px;
+    }
+
+    /* 🛠️ Fixed top-bar to center the progress */
+    .top-bar {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 23px;
+      margin-bottom: 40px;
+    }
+
+    .redo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 23px;
+      height: 23px;
+    }
+
+    .progress {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 11px;
+    }
+
+    .step.active {
+        background: #FF00FF;
+    }
+
+    .step {
+      width: 63px;
+      height: 8px;
+      border-radius: 12px;
+      background: #D9D9D9;
+    }
+
+    .question {
+      color: #000;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 40px;
+    }
+
+    .date-selectors {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .select-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      background: #fff;
+      border: 1px solid #CCC;
+      border-radius: 59px;
+      height: 50px;
+      cursor: pointer;
+      position: relative;
+      font-weight: 500;
+      color: #000;
+    }
+
+    .select-box span {
+      color: #000;
+      font-size: 16px;
+    }
+
+    .select-box img {
+      width: 16px;
+      height: 16px;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 55px;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      display: none;
+      z-index: 1000;
+    }
+
+    .dropdown div {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .dropdown div:hover {
+      background-color: #eee;
+    }
+
+    .note {
+      color: #5B5B5B;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 20px 0 40px;
+    }
+
+    .continue-btn {
+      width: 144px;
+      height: 50px;
+      border-radius: 59px;
+      background: #CCC;
+      color: #FFF;
+      font-size: 20px;
+      font-weight: 700;
+      border: none;
+      cursor: not-allowed;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .continue-btn.active {
+      background: #FF00FF;
+      color: #000;
+      cursor: pointer;
+    }
+
+    .month { width: 146px; }
+    .day { width: 118px; }
+    .year { width: 118px; }
+
+    @media (max-width: 768px) {
+      .qid { font-size: 36px; }
+      .question { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img class="logo" src="sign in images/logo.png" alt="Logo">
+    <div class="qid">Qpid</div>
+  </div>
+
+  <!-- Redo & Progress -->
+  <div class="top-bar">
+    <img src="sign in images/redo.png" class="redo" alt="Redo" id="redoBtn">
+    <div class="progress">
+        <div class="step active"></div> <!-- Add this class to color it -->
+        <div class="step active"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+      </div>
+      
+  </div>
+
+  <!-- Question -->
+  <div class="question" id="questionText">Hey, When’s your birthday?</div>
+
+  <!-- Select Boxes -->
+  <div class="date-selectors">
+    <div class="select-box month" id="monthBox">
+      <span id="monthText">Month</span>
+      <img src="sign in images/open.png" alt="Open">
+      <div class="dropdown" id="monthDropdown"></div>
+    </div>
+
+    <div class="select-box day" id="dayBox">
+      <span id="dayText">Day</span>
+      <img src="sign in images/open.png" alt="Open">
+      <div class="dropdown" id="dayDropdown"></div>
+    </div>
+
+    <div class="select-box year" id="yearBox">
+      <span id="yearText">Year</span>
+      <img src="sign in images/open.png" alt="Open">
+      <div class="dropdown" id="yearDropdown"></div>
+    </div>
+  </div>
+
+  <!-- Note -->
+  <div class="note">You must be at least 18 years old to use Qpid</div>
+
+  <!-- Continue Button -->
+  <button class="continue-btn" id="continueBtn">Continue</button>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.firebasestorage.app",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+  
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  
+    // Date select logic
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const yearRange = Array.from({length: 2025 - 1945 + 1}, (_, i) => 1945 + i);
+  
+    const urlParams = new URLSearchParams(document.referrer.split('?')[1] || '');
+    const userName = localStorage.getItem('userName') || urlParams.get('name') || '';
+    
+    window.addEventListener("DOMContentLoaded", () => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        db.collection("users").doc(user.uid).get().then((doc) => {
+          if (doc.exists && doc.data().name) {
+            const name = doc.data().name;
+            const questionText = document.getElementById('questionText');
+            if (questionText) {
+              questionText.textContent = `Hey ${name}, when’s your birthday?`;
+            }
+          }
+        });
+      }
+    });
+  });
+  
+    const monthDropdown = document.getElementById("monthDropdown");
+    const dayDropdown = document.getElementById("dayDropdown");
+    const yearDropdown = document.getElementById("yearDropdown");
+  
+    const monthText = document.getElementById("monthText");
+    const dayText = document.getElementById("dayText");
+    const yearText = document.getElementById("yearText");
+  
+    const continueBtn = document.getElementById("continueBtn");
+  
+    months.forEach((m, i) => {
+      const div = document.createElement("div");
+      div.textContent = m;
+      div.onclick = () => {
+        monthText.textContent = m;
+        monthDropdown.style.display = "none";
+        updateDays(i);
+        validate();
+      };
+      monthDropdown.appendChild(div);
+    });
+  
+    function updateDays(monthIndex) {
+      dayDropdown.innerHTML = "";
+      const year = parseInt(yearText.textContent);
+      let days = monthDays[monthIndex];
+      if (monthIndex === 1 && year && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0)) {
+        days = 29; // Leap year
+      }
+      for (let d = 1; d <= days; d++) {
+        const div = document.createElement("div");
+        div.textContent = d;
+        div.onclick = () => {
+          dayText.textContent = d;
+          dayDropdown.style.display = "none";
+          validate();
+        };
+        dayDropdown.appendChild(div);
+      }
+    }
+  
+    yearRange.forEach((y) => {
+      const div = document.createElement("div");
+      div.textContent = y;
+      div.onclick = () => {
+        yearText.textContent = y;
+        yearDropdown.style.display = "none";
+        const monthIndex = months.indexOf(monthText.textContent);
+        if (monthIndex >= 0) updateDays(monthIndex);
+        validate();
+      };
+      yearDropdown.appendChild(div);
+    });
+  
+    document.querySelectorAll(".select-box").forEach(box => {
+      const dropdown = box.querySelector(".dropdown");
+      box.querySelector("img").onclick = (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".dropdown").forEach(d => d.style.display = "none");
+        dropdown.style.display = "block";
+      };
+    });
+  
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".dropdown").forEach(d => d.style.display = "none");
+    });
+  
+    function validate() {
+      const month = months.indexOf(monthText.textContent);
+      const day = parseInt(dayText.textContent);
+      const year = parseInt(yearText.textContent);
+  
+      if (month >= 0 && day && year) {
+        const date = new Date(year, month, day);
+        const validDate = date.getDate() === day && date.getMonth() === month && date.getFullYear() === year;
+  
+        const today = new Date();
+        const age = today.getFullYear() - year - (
+          today.getMonth() < month || 
+          (today.getMonth() === month && today.getDate() < day) ? 1 : 0
+        );
+  
+        if (validDate && age >= 18) {
+          continueBtn.classList.add('active');
+          continueBtn.disabled = false;
+        } else {
+          continueBtn.classList.remove('active');
+          continueBtn.disabled = true;
+        }
+      }
+    }
+  
+    continueBtn.addEventListener("click", () => {
+      const month = months.indexOf(monthText.textContent);
+      const day = parseInt(dayText.textContent);
+      const year = parseInt(yearText.textContent);
+  
+      const date = new Date(year, month, day);
+      const validDate = date.getDate() === day && date.getMonth() === month && date.getFullYear() === year;
+  
+      const today = new Date();
+      const age = today.getFullYear() - year - (
+        today.getMonth() < month || 
+        (today.getMonth() === month && today.getDate() < day) ? 1 : 0
+      );
+  
+      if (!validDate) {
+        alert("Invalid date.");
+        return;
+      } else if (age < 18) {
+        window.location.href = "pedo.html";
+        return;
+      }
+  
+      const birthdayString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          db.collection("users").doc(user.uid).set({
+            birthday: birthdayString
+          }, { merge: true }).then(() => {
+            window.location.href = "gender.html";
+          });
+        }
+      });
+    });
+  
+    document.getElementById("redoBtn").addEventListener("click", function () {
+      window.history.back();
+    });
+  </script>
+  
+
+  
+</body>
+</html>

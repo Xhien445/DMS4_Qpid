@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+ <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <title>Main Screen Swipe</title>
+  <style>
+     body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #000;
+      color: white;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+.main-screen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Prevent scrollbar */
+}
+    @media (min-width: 768px) {
+      .main-screen {
+        flex-direction: row;
+      }
+    }
+.right-screen {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+    @media (min-width: 768px) {
+      .right-screen {
+        width: 65%;
+      }
+    }
+    .profile-card {
+      width: 90vw;
+      max-width: 350px;
+      height: auto;
+      aspect-ratio: 9 / 16;
+      background-color: #1b1b1b;
+      border-radius: 15px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      position: absolute;
+      text-align: center;
+      transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+    .profile-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .info, .icons {
+      position: relative;
+      z-index: 1;
+    }
+    .info {
+      position: absolute;
+      bottom: 80px;
+      width: 90%;
+      left: 5%;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      text-align: left;
+    }
+    .info h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    .interests {
+      display: flex;
+      justify-content: flex-start;
+      gap: 5px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+    .interest, .interest-grey {
+      padding: 2px 6px;
+      border-radius: 12px;
+      white-space: nowrap;
+      max-width: 100%;
+      font-size: 13px;
+    }
+    .interest {
+  background-color: #000000;
+  color: #ff00ff;
+  opacity: 1;
+}
+    .interest-grey {
+  background-color: #8b8b8b;
+  color: white;
+  opacity: 0.8;
+}
+    .icons {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+    }
+    .icon-img {
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+    }
+    @media (max-width: 400px) {
+      .info h2 {
+        font-size: 1.2rem;
+      }
+      .interest, .interest-grey {
+        font-size: 12px;
+        padding: 2px 5px;
+      }
+      .icon-img {
+        width: 38px;
+        height: 38px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-screen">
+    <div class="left-screen">
+      <!-- Left side content -->
+    </div>
+    <div class="right-screen">
+      <div class="right-screen" id="cards-container">
+  <!-- Cards will be dynamically generated here -->
+
+
+      
+      
+      
+        
+      </div>
+    </div>
+  </div>
+  <script>
+    let swipeHistory = [];
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.appspot.com",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  let currentUserData = {};
+
+async function fetchCurrentUserData(uid) {
+  const doc = await getDoc(doc(db, "users", uid));
+  if (doc.exists()) {
+    currentUserData = doc.data();
+  }
+}
+
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (!user) return;
+
+    const currentUserId = user.uid;
+    const container = document.getElementById('cards-container');
+    const now = new Date();
+
+    const snapshot = await db.collection("users").get();
+    const otherUsers = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .filter(u => u.id !== currentUserId);
+
+    if (otherUsers.length === 0) {
+      showNoMoreUsers();
+      return;
+    }
+
+    for (const userData of otherUsers) {
+      const card = document.createElement('div');
+      card.className = 'profile-card';
+      card.style.opacity = '0';
+
+      const name = userData.name || "No Name";
+      const birthday = userData.birthday;
+      const interests = userData.interests || [];
+      const age = birthday ? Math.floor((now - new Date(birthday)) / (365.25 * 24 * 60 * 60 * 1000)) : '?';
+      const imageUrl = userData.profilePictures || 'image/default.png';
+
+      const infoFields = ['drinking', 'education', 'exercise', 'smoking', 'working', 'zodiac'];
+const extraInfo = infoFields
+  .filter(field => userData[field])
+  .map(field => {
+    const value = userData[field];
+    const isMatch = value === currentUserData[field];
+    return `<span class="${isMatch ? 'interest' : 'interest-grey'}">${value}</span>`;
+  })
+  .join('');
+
+card.innerHTML = `
+  <img src="${imageUrl}" alt="${userData.id}" class="profile-img" />
+  <div class="info">
+    <h2>${name}, ${age}</h2>
+    <div class="interests">
+      ${interests.map(i => `<span class="interest">${i}</span>`).join('')}
+      ${extraInfo}
+    </div>
+  </div>
+  <div class="icons">
+    <img class="icon-img" src="image/back.png" alt="Go Back" />
+    <img class="icon-img" src="image/cancel.png" alt="Cancel" />
+    <img class="icon-img" src="image/heart.png" alt="Love" />
+    <img class="icon-img" src="image/fav.png" alt="Favorite" />
+  </div>
+`;
+
+
+      container.appendChild(card);
+    }
+
+    initSwipe();
+  });
+
+  function showNoMoreUsers() {
+    const container = document.getElementById('cards-container');
+    container.innerHTML = `
+      <div style="color: #fff; font-size: 1.4rem; text-align: center;">
+        You have seen all the baddies on here
+      </div>
+    `;
+  }
+
+  function initSwipe() {
+    const cards = document.querySelectorAll('.profile-card');
+    let currentCard = 0;
+    let canGoBack = true;
+
+    if (cards.length > 0) {
+      cards[0].style.opacity = '1';
+    }
+
+    async function showNextCard(direction) {
+  const cards = document.querySelectorAll('.profile-card');
+  let transformStyle;
+  if (direction === 'right') transformStyle = 'translateX(100vw) rotate(-45deg)';
+  else if (direction === 'left') transformStyle = 'translateX(-100vw) rotate(45deg)';
+  else if (direction === 'up') transformStyle = 'translateY(-100vh)';
+
+  const card = cards[currentCard];
+  const targetUserId = card.querySelector('.profile-img').alt;
+
+  // Record swipe interaction
+  let type = '';
+  if (direction === 'right') type = 'like';
+  else if (direction === 'left') type = 'dislike';
+  else if (direction === 'up') type = 'superlike';
+
+  const currentUserId = firebase.auth().currentUser.uid;
+  await db
+    .collection('users')
+    .doc(currentUserId)
+    .collection('swipes')
+    .doc(targetUserId)
+    .set({
+      type: type,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+swipeHistory.push({
+  index: currentCard,
+  type: direction === 'left' ? 'dislike' : direction === 'right' ? 'like' : 'superlike'
+});
+
+  // Animate and move to next
+  if (currentCard < cards.length - 1) {
+    card.style.transform = transformStyle;
+    card.style.opacity = '0';
+    currentCard++;
+    canGoBack = direction !== 'right' && direction !== 'up';
+    setTimeout(() => {
+      cards[currentCard].style.opacity = '1';
+      cards[currentCard].style.transform = 'none';
+    }, 300);
+  } else {
+    card.style.transform = transformStyle;
+    card.style.opacity = '0';
+    setTimeout(showNoMoreUsers, 300);
+  }
+}
+
+
+    function goBackCard() {
+  // Ensure there's a previous card and the last swipe was a 'dislike'
+  if (currentCard > 0 && swipeHistory.length > 0) {
+    const lastSwipe = swipeHistory[swipeHistory.length - 1];
+
+    if (lastSwipe.type === 'dislike') {
+      // Hide current (next) card
+      cards[currentCard].style.opacity = '0';
+      cards[currentCard].style.zIndex = '0';
+
+      // Go back to the previous card
+      currentCard = lastSwipe.index;
+      swipeHistory.pop(); // Remove last swipe
+
+      // Show the previous card correctly
+      cards[currentCard].style.opacity = '1';
+      cards[currentCard].style.transform = 'none';
+      cards[currentCard].style.zIndex = '100'; // Bring to front
+    }
+  }
+}
+const cardElements = document.querySelectorAll('.profile-card');
+cardElements.forEach((card, i) => {
+  card.style.zIndex = `${100 - i}`;
+});
+
+
+    document.querySelectorAll('.icon-img[alt="Go Back"]').forEach(btn => btn.addEventListener('click', goBackCard));
+    document.querySelectorAll('.icon-img[alt="Love"]').forEach(btn => btn.addEventListener('click', () => showNextCard('right')));
+    document.querySelectorAll('.icon-img[alt="Cancel"]').forEach(btn => btn.addEventListener('click', () => showNextCard('left')));
+    document.querySelectorAll('.icon-img[alt="Favorite"]').forEach(btn => btn.addEventListener('click', () => showNextCard('up')));
+  }
+</script>
+
+</body>
+</html>

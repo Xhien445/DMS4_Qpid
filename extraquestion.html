@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Extra Questions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+  function detectDevice() {
+    const isMobile = /iPhone|iPad|iPod|Android|Phone|Mobile/i.test(navigator.userAgent) || window.innerWidth < 1024;
+    if (isMobile) {
+      window.location.href = "nophoneallowed.html"; // Redirect to a dedicated page for mobile users
+    }
+  }
+</script>
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      height: 50px;
+      margin-right: 10px;
+    }
+
+    .logo span {
+      color: #f0f;
+      font-family: 'Lobster', cursive;
+      font-size: 48px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 6px;
+      color: #000;
+    }
+
+    p.subtext {
+      font-size: 14px;
+      text-align: center;
+      color: #555;
+      margin-top: -5px;
+      margin-bottom: 30px;
+    }
+
+    .category {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+    }
+
+    .category-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .option {
+      padding: 10px 14px;
+      border: 1px solid #000;
+      border-radius: 59px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      color: #000;
+      background-color: transparent;
+      transition: all 0.2s;
+    }
+
+    .option.selected {
+      background-color: #000;
+      color: #fff;
+    }
+
+    .continue-btn {
+  margin-top: 30px;
+  padding: 14px 30px;
+  background-color: #d9d9d9; /* matches screenshot gray */
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 59px;
+  cursor: default;
+  pointer-events: none;
+  opacity: 1; /* ensure visible but not interactive */
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.continue-btn.active {
+  background-color: #f0f;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+
+    @media (max-width: 600px) {
+      .option {
+        flex: 1 1 40%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="sign in images/logo.png" alt="logo">
+    <span>Qpid</span>
+  </div>
+  <h2>Tell us more about you</h2>
+  <p class="subtext">This is how you’ll appear on Qpid</p>
+
+  <div class="category" data-category="education">
+    <div class="category-title">Education</div>
+    <div class="options">
+      <div class="option">🎓 In college</div>
+      <div class="option">🎓 University</div>
+      <div class="option">🎓 Just graduated</div>
+      <div class="option">🎓 Postgrad degree</div>
+      <div class="option">😊 Gap year</div>
+      <div class="option">😜 Uneducated</div>
+    </div>
+  </div>
+
+  <div class="category" data-category="working">
+    <div class="category-title">Working it</div>
+    <div class="options">
+      <div class="option">💻 Career focused</div>
+      <div class="option">😴 Unemployed</div>
+      <div class="option">🧷 Freelancer</div>
+      <div class="option">🔍 Finding for a job</div>
+    </div>
+  </div>
+
+  <div class="category" data-category="exercise">
+    <div class="category-title">Exercise</div>
+    <div class="options">
+      <div class="option">💪 Everyday</div>
+      <div class="option">🙈 None</div>
+      <div class="option">👌 Often</div>
+      <div class="option">😌 Very few</div>
+    </div>
+  </div>
+
+  <div class="category" data-category="smoking">
+    <div class="category-title">Smoking</div>
+    <div class="options">
+      <div class="option">🚬 Social smoker</div>
+      <div class="option">😇 None</div>
+      <div class="option">🚭 Very few</div>
+    </div>
+  </div>
+
+  <div class="category" data-category="drinking">
+    <div class="category-title">Drinking</div>
+    <div class="options">
+      <div class="option">🍷 Alcoholic</div>
+      <div class="option">😇 None</div>
+      <div class="option">🥂 Occasion only</div>
+    </div>
+  </div>
+
+  <div class="category" data-category="zodiac">
+    <div class="category-title">Zodiac</div>
+    <div class="options">
+      <div class="option">♐ Sagittarius</div>
+      <div class="option">♈ Aries</div>
+      <div class="option">♉ Taurus</div>
+      <div class="option">♋ Cancer</div>
+      <div class="option">♊ Gemini</div>
+      <div class="option">♌ Leo</div>
+      <div class="option">♍ Virgo</div>
+      <div class="option">♎ Libra</div>
+      <div class="option">♏ Scorpius</div>
+      <div class="option">♒ Aquarius</div>
+      <div class="option">♓ Pisces</div>
+      <div class="option">♑️ Capricorn</div>
+    </div>
+  </div>
+
+  <button class="continue-btn" id="continueBtn" disabled>Continue</button>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+    apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+    authDomain: "qpid-c2d81.firebaseapp.com",
+    projectId: "qpid-c2d81",
+    storageBucket: "qpid-c2d81.firebasestorage.app",
+    messagingSenderId: "217738121187",
+    appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+    measurementId: "G-ZNQEYY2SVX"
+  };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const selections = {};
+    const continueBtn = document.getElementById("continueBtn");
+
+    document.querySelectorAll(".category").forEach(categoryDiv => {
+      const categoryName = categoryDiv.dataset.category;
+      const options = categoryDiv.querySelectorAll(".option");
+
+      options.forEach(option => {
+        option.addEventListener("click", () => {
+          // Remove 'selected' from all options in this category
+          options.forEach(o => o.classList.remove("selected"));
+          option.classList.add("selected");
+
+          // Save selection
+          selections[categoryName] = option.textContent.trim();
+
+          // Enable button if all categories are selected
+          if (Object.keys(selections).length === 6) {
+            continueBtn.disabled = false;
+            continueBtn.classList.add("active");
+          }
+        });
+      });
+    });
+
+    continueBtn.addEventListener("click", () => {
+      if (!continueBtn.classList.contains("active")) return;
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          db.collection("users").doc(user.uid).update(selections)
+            .then(() => {
+              window.location.href = "combined.html";
+            })
+            .catch(err => {
+              alert("Error saving data: " + err.message);
+            });
+        } else {
+          alert("You must be signed in.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
