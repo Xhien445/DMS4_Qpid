@@ -1,7 +1,10 @@
 const express = require("express");
 const app = express();
-const stripe = require("stripe")("sk_test_51RR3f9GauXhdX8osgF1uh5VZt8QaeGADjmkFU2XEowjmRAQjzwW0xMCOrjCTSQQrHxLVW7vOwFO7OtsqJ1rBDtEe00f90dMmZG"); // Use your real secret key
 const cors = require("cors");
+
+require("dotenv").config();
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors());
 app.use(express.json());
@@ -15,7 +18,7 @@ app.post("/create-checkout-session", async (req, res) => {
         product_data: {
           name: 'Qpid+ Premium Plan',
         },
-        unit_amount: 30000, // 30,000 VND
+        unit_amount: 30000,
       },
       quantity: 1,
     }],
@@ -27,4 +30,8 @@ app.post("/create-checkout-session", async (req, res) => {
   res.json({ id: session.id });
 });
 
-app.listen(4242, () => console.log("Server running on http://localhost:4242"));
+// ⚠️ Use process.env.PORT (required by Render)
+const PORT = process.env.PORT || 4242;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
