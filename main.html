@@ -141,6 +141,8 @@
   </style>
 </head>
 <body>
+  <iframe id="matchFrame" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999;" frameborder="0"></iframe>
+
   <div class="main-screen">
     <div class="left-screen">
       <!-- Left side content -->
@@ -289,14 +291,17 @@ card.innerHTML = `
 
   const card = cards[currentCard];
   const targetUserId = card.querySelector('.profile-img').alt;
+  const currentUserId = firebase.auth().currentUser.uid;
 
-  // Record swipe interaction
+  // Determine swipe type
   let type = '';
   if (direction === 'right') type = 'like';
   else if (direction === 'left') type = 'dislike';
   else if (direction === 'up') type = 'superlike';
+  
 
-  const currentUserId = firebase.auth().currentUser.uid;
+
+  // Save current user's swipe
   await db
     .collection('users')
     .doc(currentUserId)
@@ -306,12 +311,38 @@ card.innerHTML = `
       type: type,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
-swipeHistory.push({
-  index: currentCard,
-  type: direction === 'left' ? 'dislike' : direction === 'right' ? 'like' : 'superlike'
-});
 
-  // Animate and move to next
+  swipeHistory.push({
+    index: currentCard,
+    type: type
+  });
+
+// ✅ Check if the other user already liked you
+if (type === 'like' || type === 'superlike') {
+  const reverseSwipeSnap = await db
+    .collection('users')
+    .doc(targetUserId)
+    .collection('swipes')
+    .doc(currentUserId)
+    .get();
+
+  if (reverseSwipeSnap.exists) {
+    const reverseType = reverseSwipeSnap.data().type;
+    if (reverseType === 'like' || reverseType === 'superlike') {
+      // ✅ MATCH FOUND — Show match.html in iframe
+      const matchFrame = document.getElementById('matchFrame');
+      matchFrame.src = `match.html?userId=${targetUserId}`;
+      matchFrame.style.display = 'block';
+
+      // Optional: Notify parent too
+      window.parent.postMessage({ action: 'match', userId: targetUserId }, '*');
+    }
+  }
+}
+  
+  
+
+  // Animate and move to next card
   if (currentCard < cards.length - 1) {
     card.style.transform = transformStyle;
     card.style.opacity = '0';
@@ -327,6 +358,8 @@ swipeHistory.push({
     setTimeout(showNoMoreUsers, 300);
   }
 }
+
+
 
 
     function goBackCard() {
@@ -361,6 +394,13 @@ cardElements.forEach((card, i) => {
     document.querySelectorAll('.icon-img[alt="Cancel"]').forEach(btn => btn.addEventListener('click', () => showNextCard('left')));
     document.querySelectorAll('.icon-img[alt="Favorite"]').forEach(btn => btn.addEventListener('click', () => showNextCard('up')));
   }
+  window.addEventListener("message", (event) => {
+  if (event.data.action === 'closeMatch') {
+    const matchFrame = document.getElementById('matchFrame');
+    matchFrame.style.display = 'none';
+    matchFrame.src = '';
+  }
+});
 </script>
 
 </body>
