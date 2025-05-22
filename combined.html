@@ -119,6 +119,30 @@ body, html {
 
   <!-- Script -->
 <script>
+  window.addEventListener('message', function(event) {
+  const { action, userId } = event.data;
+
+  if (action === 'match') {
+    showMatchOverlay(userId);
+  }
+});
+function showMatchOverlay(userId) {
+  // Optionally pass userId to match.html via query param
+  const matchIframe = document.getElementById('matchPage');
+  matchIframe.src = `match.html?matchWith=${userId}`;
+
+  // Show match iframe as overlay
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(page => page.classList.remove('active'));
+
+  matchIframe.classList.add('active');
+
+  // Optionally hide after a few seconds
+  setTimeout(() => {
+    showMain(); // Go back to main page after 3s
+  }, 3000);
+}
+
 function setActivePage(activeId) {
   const pages = document.querySelectorAll('.page');
   pages.forEach(page => {
