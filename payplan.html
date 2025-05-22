@@ -197,12 +197,7 @@
     
     }
 
-    fetch("http://localhost:4242/create-checkout-session", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  }
-})
+   
    const stripe = Stripe("pk_test_51RR3f9GauXhdX8os3xI6ruyM324IkrhumdPQ5bx6fWu4cuIWc3i9pTvA64EVMvsHErKx8sBYu1QP6LLZ3DPR4Iog00TaZgHeXn"); // replace with your real publishable key
 
   const checkoutButton = document.getElementById("checkout-button");
