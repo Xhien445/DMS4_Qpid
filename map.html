@@ -23,18 +23,17 @@
   overflow: hidden;
   display: block;
 }
-    .my-avatar img,
-.other-avatar img {
-  border-radius: 50%;;
-  border: 3px solid;
-  width: 50px;
-  height: 50px;
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
   object-fit: cover;
-}
+  display: block;
+  border: 3px solid black;
+} 
 
 .my-avatar {
-  border: #ff00ff; /* the border is already on the image */
-  
+  border-color: #f0f !important; /* override for logged-in user */
 }
 
  .other-avatar {
@@ -57,12 +56,14 @@
       align-items: center;
     }
     .popup-header img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 10px;
-    }
+  width: 80px; /* increased size */
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px; /* a bit more space */
+  border: 3px solid #ff00ff; /* optional: match the outer theme */
+}
+
     .chat-bar {
       display: flex;
       margin-top: 10px;
@@ -152,14 +153,21 @@
                 ? data.profilePictures[0]
                 : "image/your-avatar.png";
 
-              L.marker([userLat, userLon], {
+                L.marker([userLat, userLon], {
   icon: L.divIcon({
-    className: 'my-avatar',
-    html: `<img src="${avatar}" class="avatar my-avatar" alt="You">`,
-    iconSize: [50, 50],
-    popupAnchor: [0, -25]
+    className: '', // Clear outer className to avoid conflict
+    html: `
+      <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 3px solid #f0f;">
+        <img src="${avatar}" style="width: 100%; height: 100%; object-fit: cover;" />
+      </div>
+    `,
+    iconSize: [60, 60],
+    popupAnchor: [0, -30]
   })
 }).addTo(map);
+
+
+
             }
           });
         });
@@ -200,15 +208,20 @@
             💪 ${data.exercise || ''}<br>
             🍷 ${data.drinking || ''}<br>
             🚬 ${data.smoking || ''}<br>
-            ♈ ${data.zodiac || ''}
+            🔮 ${data.zodiac || ''}
           `;
 
           const icon = L.divIcon({
-  className: 'other-avatar',
-  html: `<img src="${avatar}" class="avatar other-avatar" alt="${data.name}">`,
+  className: '',
+  html: `
+    <div style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 3px solid black;">
+      <img src="${avatar}" style="width: 100%; height: 100%; object-fit: cover;" />
+    </div>
+  `,
   iconSize: [50, 50],
   popupAnchor: [0, -25]
 });
+
 
 
           const marker = L.marker([offsetLat, offsetLon], { icon }).addTo(map);
