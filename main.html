@@ -174,24 +174,40 @@
 
   let currentUserData = {};
 
-async function fetchCurrentUserData(uid) {
-  const doc = await getDoc(doc(db, "users", uid));
-  if (doc.exists()) {
-    currentUserData = doc.data();
+  async function fetchCurrentUserData(uid) {
+  const docRef = db.collection("users").doc(uid);
+  const docSnap = await docRef.get();
+  if (docSnap.exists) {
+    currentUserData = docSnap.data();
   }
 }
+
 
   firebase.auth().onAuthStateChanged(async (user) => {
     if (!user) return;
 
     const currentUserId = user.uid;
+    await fetchCurrentUserData(currentUserId);
     const container = document.getElementById('cards-container');
     const now = new Date();
+    
+    
 
     const snapshot = await db.collection("users").get();
-    const otherUsers = snapshot.docs
-      .map(doc => ({ id: doc.id, ...doc.data() }))
-      .filter(u => u.id !== currentUserId);
+    // 1. Get swiped user UIDs
+const swipesSnapshot = await db
+  .collection("users")
+  .doc(currentUserId)
+  .collection("swipes")
+  .get();
+
+const swipedUserIds = swipesSnapshot.docs.map(doc => doc.id);
+
+// 2. Load users excluding current user and already-swiped users
+const otherUsers = snapshot.docs
+  .map(doc => ({ id: doc.id, ...doc.data() }))
+  .filter(u => u.id !== currentUserId && !swipedUserIds.includes(u.id));
+
 
     if (otherUsers.length === 0) {
       showNoMoreUsers();
@@ -207,7 +223,10 @@ async function fetchCurrentUserData(uid) {
       const birthday = userData.birthday;
       const interests = userData.interests || [];
       const age = birthday ? Math.floor((now - new Date(birthday)) / (365.25 * 24 * 60 * 60 * 1000)) : '?';
-      const imageUrl = userData.profilePictures || 'image/default.png';
+      const imageUrl = Array.isArray(userData.profilePictures) && userData.profilePictures.length
+  ? userData.profilePictures[0]
+  : 'image/default.png';
+
 
       const infoFields = ['drinking', 'education', 'exercise', 'smoking', 'working', 'zodiac'];
 const extraInfo = infoFields
