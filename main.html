@@ -316,6 +316,20 @@ card.innerHTML = `
     index: currentCard,
     type: type
   });
+// ✅ Store superlike notification
+if (type === 'superlike') {
+  await db
+    .collection("Notification")
+    .doc(targetUserId) // other user
+    .collection(currentUserId) // logged-in user
+    .doc("superlike") // or a timestamp string for uniqueness
+    .set({
+      fromUser: currentUserId,
+      type: "superlike",
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      read: false
+    });
+}
 
 // ✅ Check if the other user already liked you
 if (type === 'like' || type === 'superlike') {
@@ -329,13 +343,30 @@ if (type === 'like' || type === 'superlike') {
   if (reverseSwipeSnap.exists) {
     const reverseType = reverseSwipeSnap.data().type;
     if (reverseType === 'like' || reverseType === 'superlike') {
-      // ✅ MATCH FOUND — Show match.html in iframe
-      const matchFrame = document.getElementById('matchFrame');
-      matchFrame.src = `match.html?userId=${targetUserId}`;
-      matchFrame.style.display = 'block';
+     // ✅ MATCH FOUND — Show match.html in iframe
+const matchFrame = document.getElementById('matchFrame');
+matchFrame.src = `match.html?userId=${targetUserId}`;
+matchFrame.style.display = 'block';
 
-      // Optional: Notify parent too
-      window.parent.postMessage({ action: 'match', userId: targetUserId }, '*');
+
+// ✅ Add mutual match records under each user's matches path
+await db
+  .collection('users')
+  .doc(currentUserId)
+  .collection('matches')
+  .doc(targetUserId)
+  .set({ matched: true });
+
+await db
+  .collection('users')
+  .doc(targetUserId)
+  .collection('matches')
+  .doc(currentUserId)
+  .set({ matched: true });
+
+// Optional: Notify parent too
+window.parent.postMessage({ action: 'match', userId: targetUserId }, '*');
+
     }
   }
 }
