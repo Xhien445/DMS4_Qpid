@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+      padding: 20px;
+    }
+    .body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+    .toggle-button {
+      background: #333;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+.layout {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+
+    /* Ensure visibility control */
+    .hidden {
+      display: none !important;
+    }
+
+    .profile-card {
+      max-width: 480px;
+      width: 100%;
+      background: black;
+
+      overflow: hidden;
+    }
+
+    .pay-plan {
+      display: none;
+      width: 100%;
+      max-width: 960px;
+      gap: 20px;
+    }
+    .pay-plan .column {
+      flex: 1;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .profile-header {
+      position: relative;
+      height: 698px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+    }
+    .profile-header img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .profile-header h1 {
+      z-index: 1;
+      font-size: 2rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+    }
+    .section {
+      padding: 20px;
+    }
+    .section h2 {
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #4f4f4f;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bio-box {
+      font-size: 16px;
+      line-height: 1.5;
+      border: 1px solid #ff00ff;
+      padding: 12px;
+      border-radius: 30px;
+    }
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      background: #e5e5e5;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 500;
+      color: black;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chip img {
+      width: 16px;
+      height: 16px;
+    }
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .gallery img {
+      width: 100%;
+      aspect-ratio: 350 / 698;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+    .location-row {
+      font-size: 20px;
+      margin-top: 8px;
+    }
+    .section h2 img {
+      width: 20px;
+      height: 20px;
+    }
+    .section-gallery1 img {
+  width: 100%;
+  aspect-ratio: 350 / 698;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="layout">
+    <!-- PROFILE INSIGHTS -->
+    <article class="profile-card" id="profileInsights">
+        <section class="profile-header">
+            <img id="profilePicture" src="" alt="My Profile Picture" />
+            <h1 id="profileNameAge">Me, 24</h1>
+          </section>
+
+      <section class="section">
+        <h2><span>My Bio</span></h2>
+        <div class="bio-box">Me eat kids</div>
+      </section>
+
+      <section class="section">
+        <h2><span>About me</span></h2>
+        <div class="chips">
+          <div class="chip">
+            <img src="job-icon.png" alt="" />
+            Finding for a job
+          </div>
+          <div class="chip">
+            <img src="study-icon.png" alt="" />
+            University
+          </div>
+        </div>
+      </section>
+
+      <div class="section-gallery1">
+        <img src="" alt="">
+      </div>
+
+      <section class="section">
+        <h2><span>My Life</span></h2>
+        <div class="chips">
+          <div class="chip">
+            <img src="wine-icon.png" alt="" />
+            Rarely
+          </div>
+        </div>
+      </section>
+
+      <section class="section-gallery2">
+        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/0f1a5e82ab047327234514870211cdc92e0e3841" alt="Gallery 2" />
+        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/d2242319bcda318d153c7e949eca67ab4afe7dbb" alt="Gallery 3" />
+      </section>
+
+      <section class="section">
+        <h2>
+          <img src="location-icon.png" alt="Location icon" />
+          <span>My location</span>
+        </h2>
+        <div class="location-row">Ho Chi Minh city</div>
+      </section>
+    </article>
+
+   
+
+    <script>
+        // Run everything after DOM is ready
+        document.addEventListener("DOMContentLoaded", () => {
+          // Firebase config and init
+          const firebaseConfig = {
+            apiKey: "AIzaSyCKAAQRUt_-BfSrnBvVqzrp-1c1BBycRhg",
+            authDomain: "qpid-c2d81.firebaseapp.com",
+            projectId: "qpid-c2d81",
+            storageBucket: "qpid-c2d81.appspot.com",
+            messagingSenderId: "217738121187",
+            appId: "1:217738121187:web:33022ec8e0d336d6121ad6",
+            measurementId: "G-ZNQEYY2SVX"
+          };
+      
+          firebase.initializeApp(firebaseConfig);
+      
+          const db = firebase.firestore();
+          const storage = firebase.storage();
+          const auth = firebase.auth();
+      
+          function toggleView() {
+            const profile = document.getElementById('profileInsights');
+            const plan = document.getElementById('payPlan');
+            profile.classList.toggle('hidden');
+            plan.classList.toggle('hidden');
+            plan.style.display = profile.classList.contains('hidden') ? 'flex' : 'none';
+            profile.style.display = plan.classList.contains('hidden') ? 'block' : 'none';
+          }
+      
+          auth.onAuthStateChanged(async user => {
+            if (!user) {
+              console.warn("No user signed in");
+              return;
+            }
+      
+            const userUID = user.uid;
+      
+            try {
+              // Get user data from Firestore
+              const doc = await db.collection('users').doc(userUID).get();
+              if (doc.exists) {
+                const userData = doc.data();
+                const name = userData.name || "Me";
+                const birthday = userData.birthday;
+                const profileUrl = userData.profilePictures || "";
+      
+                // Calculate age
+                let age = "N/A";
+                if (birthday) {
+                  const birthDate = new Date(birthday.seconds ? birthday.seconds * 1000 : birthday);
+                  const today = new Date();
+                  age = today.getFullYear() - birthDate.getFullYear();
+                  const m = today.getMonth() - birthDate.getMonth();
+                  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                  }
+                }
+      
+                // Update profile section
+                document.getElementById("profilePicture").src = profileUrl;
+                document.getElementById("profileNameAge").textContent = `${name}, ${age}`;
+              }
+      
+              // Load image from Firebase Storage
+              const listRef = storage.ref(`profile_pics/${userUID}/`);
+              const res = await listRef.listAll();
+      
+              if (res.items.length > 0) {
+                const itemsWithMeta = await Promise.all(
+                  res.items.map(async itemRef => {
+                    const metadata = await itemRef.getMetadata();
+                    return {
+                      ref: itemRef,
+                      timeCreated: new Date(metadata.timeCreated)
+                    };
+                  })
+                );
+      
+                itemsWithMeta.sort((a, b) => a.timeCreated - b.timeCreated);
+                const imageToShow = itemsWithMeta[1]?.ref || itemsWithMeta[0].ref;
+                const imageURL = await imageToShow.getDownloadURL();
+      
+                const gallery1 = document.querySelector('.section-gallery1 img');
+                if (gallery1) {
+                  gallery1.src = imageURL;
+                  console.log("✅ Gallery1 image loaded:", imageURL);
+                } else {
+                  console.warn("❌ .section-gallery1 img not found in DOM");
+                }
+              } else {
+                console.warn("⚠️ No images found in storage.");
+              }
+      
+            } catch (error) {
+              console.error("❌ Error:", error);
+            }
+          });
+        });
+      </script>
+      
+</body>
+</html>
